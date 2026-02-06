@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Etherea | Digital Sanctuary</title>
+    <title>Etherea | Universal Sanctuary</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300&display=swap" rel="stylesheet">
     <style>
         body {
@@ -18,6 +18,7 @@
             background: #fff; border-radius: 50%;
             box-shadow: 0 0 50px #38bdf8, 0 0 100px #0ea5e9;
             animation: pulse 4s infinite ease-in-out; z-index: 1; opacity: 0.5;
+            transition: all 2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         @keyframes pulse {
@@ -25,17 +26,13 @@
             50% { transform: scale(1.1); opacity: 0.6; }
         }
 
-        #ui-container { z-index: 10; text-align: center; width: 100%; max-width: 400px; padding: 20px; }
-
-        form { display: flex; flex-direction: column; align-items: center; }
+        #ui-container { z-index: 10; text-align: center; width: 100%; max-width: 400px; padding: 20px; transition: all 0.8s ease; }
 
         input {
             background: transparent; border: none; border-bottom: 1px solid rgba(255,255,255,0.2);
             color: white; font-size: 1.2rem; text-align: center; outline: none;
             width: 100%; padding: 15px 0; font-weight: 100; transition: 0.5s;
         }
-
-        input:focus { border-bottom: 1px solid #38bdf8; }
 
         .btn-release {
             margin-top: 30px; background: transparent; border: 1px solid rgba(255,255,255,0.3);
@@ -49,13 +46,16 @@
             display: none; opacity: 0; z-index: 20; text-align: center;
             background: rgba(255, 255, 255, 0.05); padding: 40px;
             border-radius: 30px; backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1);
+            transition: opacity 1.5s ease;
         }
 
         .spotify-link {
-            display: inline-block; margin-top: 20px; background: #1DB954;
+            display: inline-block; margin-top: 25px; background: #1DB954;
             color: white; padding: 12px 25px; border-radius: 30px;
             text-decoration: none; font-weight: 400; font-size: 0.9rem; transition: 0.3s;
         }
+
+        .spotify-link:hover { transform: scale(1.05); background: #1ed760; }
     </style>
 </head>
 <body>
@@ -70,32 +70,5 @@
     </div>
 
     <div id="result-card">
-        <h2 style="font-weight: 100; color: #38bdf8; letter-spacing: 3px;">VOICE HEARD</h2>
-        <p id="presc-msg" style="font-weight: 100; line-height: 1.6;"></p>
-        <div id="link-area"></div>
-        <br><br>
-        <a href="javascript:location.reload()" style="color:white; opacity:0.3; font-size:0.7rem; text-decoration:none;">Let go of something else</a>
-    </div>
+        <h2 id="result-title" style="font
 
-    <script>
-        const form = document.getElementById('release-form');
-        const input = document.getElementById('burden-input');
-        const ui = document.getElementById('ui-container');
-        const card = document.getElementById('result-card');
-        const sphere = document.getElementById('sphere');
-        const msg = document.getElementById('presc-msg');
-        const linkArea = document.getElementById('link-area');
-
-        const db = {
-            tired: {
-                txt: "Your soul is asking for a deep, healing silence. You've fought well today.",
-                url: "https://open.spotify.com/playlist/37i9dQZF1DWZqd5JicZI0u", // Sleep/Chill
-                label: "Listen to Deep Sleep"
-            },
-            sad: {
-                txt: "Rain falls so the earth can breathe. Let your heart do the same.",
-                url: "https://open.spotify.com/playlist/37i9dQZF1DX7qK8ma5wgG1", // Sad Songs
-                label: "Listen to Comforting Melodies"
-            },
-            default: {
-                txt: "The stars have taken your burden. You
