@@ -4,79 +4,57 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Etherea | Digital Sanctuary</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300&display=swap" rel="stylesheet">
     <style>
         body {
-            margin: 0; padding: 0;
-            background: #020617;
+            margin: 0; padding: 0; background: #010409;
             height: 100vh; display: flex; flex-direction: column;
             justify-content: center; align-items: center;
-            color: #f8fafc; font-family: 'Inter', sans-serif;
-            overflow: hidden;
+            color: #f0f6fc; font-family: 'Inter', sans-serif; overflow: hidden;
         }
 
         #sphere {
-            position: absolute;
-            width: 180px; height: 180px;
-            background: white; border-radius: 50%;
-            box-shadow: 0 0 80px #38bdf8, 0 0 150px rgba(56, 189, 248, 0.2);
-            animation: pulse 8s infinite ease-in-out;
-            opacity: 0.6; z-index: 1;
+            position: absolute; width: 150px; height: 150px;
+            background: #fff; border-radius: 50%;
+            box-shadow: 0 0 50px #38bdf8, 0 0 100px #0ea5e9;
+            animation: pulse 4s infinite ease-in-out; z-index: 1; opacity: 0.5;
         }
 
         @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 0.4; filter: blur(5px); }
-            50% { transform: scale(1.1); opacity: 0.7; filter: blur(2px); }
+            0%, 100% { transform: scale(1); opacity: 0.3; }
+            50% { transform: scale(1.1); opacity: 0.6; }
         }
 
-        #input-container {
-            z-index: 10;
-            text-align: center;
-            width: 85%;
-            max-width: 500px;
-            transition: all 1s ease;
-        }
+        #ui-container { z-index: 10; text-align: center; width: 100%; max-width: 400px; padding: 20px; }
+
+        form { display: flex; flex-direction: column; align-items: center; }
 
         input {
-            background: transparent; border: none;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            color: white; font-size: 1.3rem; text-align: center;
-            outline: none; width: 100%; padding: 15px 0;
-            font-weight: 200; letter-spacing: 1px;
+            background: transparent; border: none; border-bottom: 1px solid rgba(255,255,255,0.2);
+            color: white; font-size: 1.2rem; text-align: center; outline: none;
+            width: 100%; padding: 15px 0; font-weight: 100; transition: 0.5s;
         }
 
-        /* Dokunmatik/Tıklanabilir Release Butonu */
-        .release-trigger {
-            margin-top: 30px;
-            padding: 10px 30px;
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 30px;
-            background: transparent;
-            color: white;
-            cursor: pointer;
-            font-size: 0.8rem;
-            letter-spacing: 2px;
-            transition: 0.3s;
+        input:focus { border-bottom: 1px solid #38bdf8; }
+
+        .btn-release {
+            margin-top: 30px; background: transparent; border: 1px solid rgba(255,255,255,0.3);
+            color: white; padding: 10px 30px; border-radius: 25px; cursor: pointer;
+            letter-spacing: 2px; font-size: 0.7rem; transition: 0.3s;
         }
 
-        .release-trigger:hover {
-            background: white;
-            color: black;
-        }
+        .btn-release:hover { background: white; color: black; }
 
         #result-card {
-            display: none; opacity: 0; z-index: 20;
-            max-width: 400px; padding: 40px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 30px; backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            text-align: center;
+            display: none; opacity: 0; z-index: 20; text-align: center;
+            background: rgba(255, 255, 255, 0.05); padding: 40px;
+            border-radius: 30px; backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1);
         }
 
-        .action-btn {
-            background: white; color: black; padding: 15px 30px;
-            border-radius: 40px; text-decoration: none; font-size: 0.9rem;
-            display: inline-block; margin-top: 20px;
+        .spotify-link {
+            display: inline-block; margin-top: 20px; background: #1DB954;
+            color: white; padding: 12px 25px; border-radius: 30px;
+            text-decoration: none; font-weight: 400; font-size: 0.9rem; transition: 0.3s;
         }
     </style>
 </head>
@@ -84,42 +62,40 @@
 
     <div id="sphere"></div>
 
-    <div id="input-container">
-        <input type="text" id="main-input" placeholder="What's heavy on your soul?" autocomplete="off">
-        <button class="release-trigger" onclick="handleRelease()">RELEASE</button>
+    <div id="ui-container">
+        <form id="release-form">
+            <input type="text" id="burden-input" placeholder="What is weighing you down?" required autocomplete="off">
+            <button type="submit" class="btn-release">RELEASE INTO THE STARS</button>
+        </form>
     </div>
 
     <div id="result-card">
-        <h3 style="color:#38bdf8; font-weight: 200; letter-spacing: 2px;">HEARD.</h3>
-        <p id="presc-text" style="line-height: 1.6; font-weight: 200;"></p>
-        <div id="action-area"></div>
+        <h2 style="font-weight: 100; color: #38bdf8; letter-spacing: 3px;">VOICE HEARD</h2>
+        <p id="presc-msg" style="font-weight: 100; line-height: 1.6;"></p>
+        <div id="link-area"></div>
         <br><br>
-        <a href="javascript:location.reload()" style="color:white; opacity:0.4; font-size:0.7rem;">Release another thought</a>
+        <a href="javascript:location.reload()" style="color:white; opacity:0.3; font-size:0.7rem; text-decoration:none;">Let go of something else</a>
     </div>
 
     <script>
-        const input = document.getElementById('main-input');
-        const container = document.getElementById('input-container');
-        const sphere = document.getElementById('sphere');
+        const form = document.getElementById('release-form');
+        const input = document.getElementById('burden-input');
+        const ui = document.getElementById('ui-container');
         const card = document.getElementById('result-card');
-        const pText = document.getElementById('presc-text');
-        const actionArea = document.getElementById('action-area');
+        const sphere = document.getElementById('sphere');
+        const msg = document.getElementById('presc-msg');
+        const linkArea = document.getElementById('link-area');
 
-        // Enter Tuşu Fonksiyonu
-        input.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                handleRelease();
-            }
-        });
-
-        // Ana İşlem Fonksiyonu (Tıklama veya Enter ile çalışır)
-        function handleRelease() {
-            const val = input.value.trim();
-            if (val.length < 1) return;
-
-            let message = "The universe has absorbed your weight. You are now a little lighter.";
-            let btnText = "Open Peace Playlist";
-            let link = "https://open.spotify.com/playlist/37i9dQZF1DWZqd5YICuSry";
-
-            if(val.toLowerCase().includes('tired') || val.toLowerCase().includes('yorgun')) {
-                message = "Your exhaustion is a sign of
+        const db = {
+            tired: {
+                txt: "Your soul is asking for a deep, healing silence. You've fought well today.",
+                url: "https://open.spotify.com/playlist/37i9dQZF1DWZqd5JicZI0u", // Sleep/Chill
+                label: "Listen to Deep Sleep"
+            },
+            sad: {
+                txt: "Rain falls so the earth can breathe. Let your heart do the same.",
+                url: "https://open.spotify.com/playlist/37i9dQZF1DX7qK8ma5wgG1", // Sad Songs
+                label: "Listen to Comforting Melodies"
+            },
+            default: {
+                txt: "The stars have taken your burden. You
