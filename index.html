@@ -3,74 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Etherea | The Universal Release</title>
+    <title>Etherea | Release Into The Stars</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg-color: #020617;
+            --accent-color: #38bdf8;
+            --text-color: #f8fafc;
+        }
+
         body {
             margin: 0; padding: 0;
-            background: radial-gradient(circle, #0f172a 0%, #020617 100%);
+            background: radial-gradient(circle at center, #0f172a 0%, var(--bg-color) 100%);
             height: 100vh; display: flex; flex-direction: column;
             justify-content: center; align-items: center;
-            color: #f8fafc; font-family: 'Inter', sans-serif;
+            color: var(--text-color); font-family: 'Inter', sans-serif;
             overflow: hidden; text-align: center;
         }
 
+        /* Parlayan Küre */
         #sphere {
-            width: 120px; height: 120px;
+            width: 140px; height: 140px;
             background: white; border-radius: 50%;
-            box-shadow: 0 0 60px #38bdf8;
-            animation: pulse 4s infinite ease-in-out;
-            transition: all 1.5s ease;
+            box-shadow: 0 0 60px var(--accent-color), 0 0 120px rgba(56, 189, 248, 0.3);
+            animation: pulse 6s infinite ease-in-out;
+            transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 2;
         }
 
         @keyframes pulse {
-            0%, 100% { transform: scale(1); filter: blur(2px); }
-            50% { transform: scale(1.15); filter: blur(0px); }
+            0%, 100% { transform: scale(1); filter: blur(2px); opacity: 0.8; }
+            50% { transform: scale(1.1); filter: blur(0px); opacity: 1; }
+        }
+
+        /* Giriş Alanı */
+        #input-container {
+            margin-top: 50px; transition: all 1s ease;
+            display: flex; flex-direction: column; align-items: center;
         }
 
         input {
-            margin-top: 40px; background: transparent; border: none;
+            background: transparent; border: none;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            color: white; font-size: 1.5rem; text-align: center;
-            outline: none; width: 80%; max-width: 500px;
-            padding: 10px; transition: all 1s ease;
+            color: white; font-size: 1.2rem; text-align: center;
+            outline: none; width: 300px; padding: 15px;
+            font-weight: 300; letter-spacing: 1px;
+            transition: border-bottom 0.5s;
         }
 
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        input:focus { border-bottom: 1px solid var(--accent-color); }
 
+        /* Reçete Paneli */
+        #result-card {
+            display: none; opacity: 0;
+            max-width: 400px; padding: 30px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 24px; backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: slideUp 2s forwards;
+        }
+
+        @keyframes slideUp {
+            to { opacity: 1; transform: translateY(-20px); }
+        }
+
+        .prescription-title { color: var(--accent-color); font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 15px; }
+        .prescription-text { font-size: 1.1rem; font-weight: 300; line-height: 1.6; margin-bottom: 25px; }
+        
+        .action-btn {
+            background: white; color: black; padding: 12px 24px;
+            border-radius: 30px; text-decoration: none; font-size: 0.9rem;
+            font-weight: 400; transition: 0.3s; display: inline-block;
+        }
+
+        .action-btn:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(255,255,255,0.4); }
+
+        /* Alt Bilgi */
+        #footer-info {
+            position: fixed; bottom: 30px; font-size: 0.7rem;
+            letter-spacing: 2px; opacity: 0.4; text-transform: uppercase;
+        }
     </style>
 </head>
 <body>
 
     <div id="sphere"></div>
-    <input type="text" id="input-area" placeholder="What is weighing you down?" autocomplete="off">
 
-    <script>
-        const input = document.getElementById('input-area');
-        const sphere = document.getElementById('sphere');
-
-        // SAYAÇ KURULUMU
-        let globalBurdenCount = 10540; 
-        const counterElement = document.createElement('div');
-        counterElement.style.cssText = "position:fixed; bottom:20px; opacity:0.4; font-size:0.8rem; letter-spacing:1px; transition: all 0.5s ease;";
-        counterElement.innerText = `${globalBurdenCount.toLocaleString()} BURDENS RELEASED GLOBALLY`;
-        document.body.appendChild(counterElement);
-
-        // REÇETE VERİ TABANI (Duygu Analizi İçin)
-        const prescriptions = {
-            tired: "You've done enough for today. Close your eyes for 60 seconds and listen to the silence.",
-            sad: "It's okay to not be okay. Let the music hold you and breathe deeply.",
-            angry: "Let that fire out. Exhale longer than you inhale. Movement will clear your mind.",
-            default: "The universe heard you. Your journey is unique and you are not alone."
-        };
-
-        input.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && input.value.length > 0) {
-                const val = input.value.toLowerCase();
-                
-                // Duygu Analizi
-                let selectedPresc = prescriptions.default;
-                if(val.includes('tired') || val.includes('yorgun')) selectedPresc = prescriptions.tired;
-                if(val.includes('sad') || val.includes('üzgün')) selectedPresc = prescriptions.sad;
-                if(val.includes('angry')
-
-
+    <div id="input-container">
