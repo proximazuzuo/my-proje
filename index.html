@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Etherea | Release Your Burden</title>
+    <title>Etherea | Yükünü Serbest Bırak</title>
     <style>
         body {
             margin: 0;
@@ -27,7 +27,7 @@
             box-shadow: 0 0 50px #38bdf8, 0 0 100px #0ea5e9;
             animation: pulse 4s infinite ease-in-out;
             cursor: pointer;
-            transition: transform 0.3s ease;
+            transition: all 0.5s ease;
         }
 
         @keyframes pulse {
@@ -44,7 +44,7 @@
             font-size: 1.2rem;
             text-align: center;
             outline: none;
-            width: 300px;
+            width: 350px;
             transition: all 0.5s;
         }
 
@@ -54,31 +54,16 @@
             opacity: 0.6;
             font-size: 0.9rem;
         }
-    </style>
-</head>
-<body>
 
-    <div id="sphere"></div>
-    <input type="text" id="input-area" placeholder="Write what's heavy..." autocomplete="off">
-    <p class="instruction">Your words aren't stored. They are just released.</p>
+        /* Reçete Paneli Tasarımı */
+        #prescription-card {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-width: 400px;
+            text-align: center;
+            display
 
-    <script>
-        const input = document.getElementById('input-area');
-        const sphere = document.getElementById('sphere');
-
-        input.addEventListener('input', (e) => {
-            // Her harf yazıldığında küre biraz daha parlıyor
-            let intensity = Math.min(e.target.value.length * 2, 100);
-            sphere.style.boxShadow = `0 0 ${50 + intensity}px #38bdf8, 0 0 ${100 + intensity}px #0ea5e9`;
-        });
-
-        input.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                alert("Deep breath. It's gone. Here is your prescription: Listen to 'Weightless' by Marconi Union.");
-                input.value = "";
-                sphere.style.boxShadow = `0 0 50px #38bdf8, 0 0 100px #0ea5e9`;
-            }
-        });
-    </script>
-</body>
-</html>
