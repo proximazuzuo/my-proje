@@ -67,6 +67,13 @@
         const box = document.getElementById('prescription-box');
         const pText = document.getElementById('presc-text');
 
+        // SAYAÇ KURULUMU
+        let globalBurdenCount = 10540; 
+        const counterElement = document.createElement('div');
+        counterElement.style.cssText = "position:fixed; bottom:20px; opacity:0.5; font-size:0.8rem; letter-spacing:1px;";
+        counterElement.innerText = `${globalBurdenCount.toLocaleString()} BURDENS RELEASED GLOBALLY`;
+        document.body.appendChild(counterElement);
+
         // REÇETE VERİ TABANI
         const prescriptions = {
             tired: "You've done enough for today. Your prescription: 10 minutes of silence and a warm tea. Tomorrow is a new canvas.",
@@ -77,15 +84,20 @@
 
         input.addEventListener('keypress', (e) => {
             if (e.key === 'Enter' && input.value.length > 2) {
+                // SAYAÇ GÜNCELLEME
+                globalBurdenCount++;
+                counterElement.innerText = `${globalBurdenCount.toLocaleString()} BURDENS RELEASED GLOBALLY`;
+                counterElement.style.opacity = "1";
+                counterElement.style.color = "#38bdf8";
+
                 const val = input.value.toLowerCase();
                 
-                // 1. DUYGU ANALİZİ (Basit seviye)
                 let selected = prescriptions.default;
                 if(val.includes('tired') || val.includes('yorgun')) selected = prescriptions.tired;
                 if(val.includes('sad') || val.includes('üzgün')) selected = prescriptions.sad;
                 if(val.includes('angry') || val.includes('kızgın')) selected = prescriptions.angry;
 
-                // 2. GÖRSEL EFEKT (Küreyi patlatma ve metni yok etme)
+                // GÖRSEL EFEKT
                 input.style.opacity = "0";
                 sphere.style.transform = "scale(0)";
                 sphere.style.opacity = "0";
@@ -100,3 +112,4 @@
     </script>
 </body>
 </html>
+
