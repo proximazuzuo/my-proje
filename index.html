@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Etherea | Soul Star</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+    <title>Etherea | The Silver Thread</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
     <style>
         /* --- ATMOSFER --- */
-        :root { --main-color: #38bdf8; --bg-opacity: 0.12; --star-color: #fff; }
+        :root { --main-color: #38bdf8; --bg-opacity: 0.12; }
         body {
             margin: 0; padding: 0; background: #010409;
             height: 100vh; display: flex; flex-direction: column;
@@ -19,32 +18,60 @@
 
         /* KATMANLAR */
         #star-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+        #bg-frame { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.1; filter: grayscale(100%) blur(3px); background-size: cover; background-position: center; transition: 3s ease; }
+        
+        /* CANLI DÜNYA */
         #map-container { position: fixed; bottom: 5%; left: 5%; width: 90%; height: 40vh; z-index: 1; opacity: var(--bg-opacity); pointer-events: none; background: url('https://upload.wikimedia.org/wikipedia/commons/8/80/World_map_back_grey.svg') no-repeat center; background-size: contain; transition: filter 2s ease; animation: global-breathe 10s infinite ease-in-out; }
-        @keyframes global-breathe { 0%, 100% { opacity: 0.15; filter: drop-shadow(0 0 10px var(--main-color)); } 50% { opacity: 0.25; filter: drop-shadow(0 0 35px var(--main-color)); } }
+        @keyframes global-breathe { 0%, 100% { opacity: 0.15; transform: scale(1); filter: drop-shadow(0 0 10px var(--main-color)); } 50% { opacity: 0.25; transform: scale(1.02); filter: drop-shadow(0 0 35px var(--main-color)); } }
 
         #station-header { position: fixed; top: 40px; font-size: 0.6rem; letter-spacing: 12px; opacity: 0.3; font-weight: 200; text-align: center; width: 100%; text-transform: uppercase; z-index: 100; pointer-events: none; }
         
-        /* GİRİŞ / PROFİL BUTONU (User Auth) */
-        #auth-btn {
-            position: fixed; top: 40px; right: 40px; pointer-events: auto; z-index: 500;
-            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-            padding: 10px 20px; border-radius: 30px; cursor: pointer; transition: 0.3s;
-            display: flex; align-items: center; gap: 10px;
+        /* PROFİL BUTONU */
+        #profile-trigger {
+            position: fixed; top: 40px; right: 40px; 
+            font-size: 0.55rem; letter-spacing: 3px; cursor: pointer; z-index: 500;
+            color: rgba(255,255,255,0.4); text-decoration: none; transition: 0.3s;
+            border-bottom: 1px solid transparent; padding-bottom: 5px; pointer-events: auto;
         }
-        #auth-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--main-color); }
-        .user-avatar { width: 20px; height: 20px; border-radius: 50%; background: var(--main-color); display: none; }
-        .auth-text { font-size: 0.55rem; letter-spacing: 2px; text-transform: uppercase; color: #fff; }
+        #profile-trigger:hover { color: var(--main-color); border-bottom: 1px solid var(--main-color); opacity: 1; }
 
-        /* ANA KÜRE */
-        #sphere-wrapper { position: relative; z-index: 60; transition: transform 1.5s cubic-bezier(0.19, 1, 0.22, 1); margin-bottom: 30px; }
+        /* GALAKSİLER */
+        #public-galaxy { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; pointer-events: none; }
+        
+        /* ÖZEL SIĞINAK (Sanctuary) */
+        #sanctuary-layer { 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 600; 
+            background: #010409; opacity: 0; pointer-events: none; transition: opacity 1s ease;
+            justify-content: center; align-items: center;
+        }
+        #sanctuary-galaxy { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: auto; z-index: 602; }
+        
+        /* YENİ: GÜMÜŞ İPLİK KATMANI */
+        #thread-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 601; }
+
+        .sanctuary-title { position: absolute; top: 15%; font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; font-style: italic; color: #fff; opacity: 0.7; letter-spacing: 2px; pointer-events: none; z-index: 603; }
+        .close-sanctuary { position: absolute; bottom: 10%; font-size: 0.6rem; letter-spacing: 4px; cursor: pointer; opacity: 0.4; transition: 0.3s; pointer-events: auto; color: #fff; z-index: 603; }
+        .close-sanctuary:hover { opacity: 1; color: var(--main-color); }
+
+        /* KÜRELER */
+        .stored-orb { 
+            position: absolute; border-radius: 50%; cursor: pointer; pointer-events: auto;
+            box-shadow: 0 0 20px currentColor; transition: transform 0.4s ease; opacity: 0.7;
+        }
+        .stored-orb:hover { transform: scale(4) !important; filter: brightness(1.5); z-index: 1000; opacity: 1; }
+
+        /* MERKEZ KÜRE */
+        #sphere-wrapper { position: relative; z-index: 60; transition: transform 1.5s cubic-bezier(0.19, 1, 0.22, 1); margin-bottom: 30px; pointer-events: none; }
         #sphere {
-            width: 140px; height: 140px; background: #fff; border-radius: 50%;
+            pointer-events: auto; width: 140px; height: 140px; background: #fff; border-radius: 50%;
             box-shadow: 0 0 50px var(--main-color), 0 0 100px rgba(255,255,255,0.15), inset 0 0 30px rgba(255,255,255,0.5);
             animation: breathe 8s infinite ease-in-out;
-            transition: all 1s ease; cursor: pointer; pointer-events: auto;
+            transition: all 1s ease; cursor: pointer;
         }
-        @keyframes breathe { 0%, 100% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.1); opacity: 0.9; } }
+        @keyframes breathe { 0%, 100% { transform: scale(1); opacity: 0.5; filter: blur(1px); } 50% { transform: scale(1.1); opacity: 0.9; filter: blur(0px); } }
         .imploding { transform: scale(0.05) !important; opacity: 0; filter: blur(10px); transition: all 0.8s ease-in !important; }
+        .processing { animation: pulse-fast 1.2s infinite ease-in-out !important; }
+        @keyframes pulse-fast { 0%, 100% { transform: scale(0.9); box-shadow: 0 0 20px var(--main-color); } 50% { transform: scale(1.1); box-shadow: 0 0 90px var(--main-color); } }
 
         /* UI */
         #ui-layer { position: relative; z-index: 100; text-align: center; width: 90%; max-width: 600px; transition: 0.5s; pointer-events: none; }
@@ -58,51 +85,22 @@
         textarea::placeholder { color: rgba(255,255,255,0.15); font-family: 'Inter', sans-serif; font-size: 1.1rem; font-style: normal; letter-spacing: 3px; font-weight: 200; }
         
         .checkbox-wrapper { pointer-events: auto; margin-top: 25px; display: flex; justify-content: center; align-items: center; gap: 10px; cursor: pointer; opacity: 0.4; transition: 0.3s; position: relative; z-index: 101;}
-        .checkbox-wrapper:hover { opacity: 1; color: var(--main-color); }
-        .custom-checkbox { width: 10px; height: 10px; border: 1px solid #fff; border-radius: 50%; display: inline-block; }
-        input:checked + .custom-checkbox { background: var(--main-color); border-color: var(--main-color); box-shadow: 0 0 10px var(--main-color); }
-        
-        /* SANCTUARY (SIĞINAK) - YENİ TASARIM */
-        #sanctuary-layer { 
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 600; 
-            background: radial-gradient(circle at center, #050510 0%, #000 100%); opacity: 0; transition: opacity 1s ease;
-            justify-content: center; align-items: center; flex-direction: column; pointer-events: auto;
-        }
-        
-        /* SOUL STAR (Ruh Yıldızı) */
-        #soul-star-container { position: relative; width: 300px; height: 300px; display: flex; justify-content: center; align-items: center; margin-bottom: 50px; }
-        #soul-star {
-            width: 100px; height: 100px; border-radius: 50%;
-            background: var(--star-color);
-            box-shadow: 0 0 60px var(--star-color), 0 0 120px var(--star-color);
-            animation: star-pulse 4s infinite ease-in-out;
-            transition: all 2s ease;
-            position: relative; z-index: 10;
-        }
-        @keyframes star-pulse { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.1); opacity: 1; box-shadow: 0 0 90px var(--star-color), 0 0 150px var(--star-color); } }
+        .checkbox-wrapper:hover { opacity: 0.8; color: var(--main-color); }
+        .checkbox-wrapper input { display: none; }
+        .custom-checkbox { width: 10px; height: 10px; border: 1px solid #fff; border-radius: 50%; display: inline-block; position: relative; transition: 0.3s; }
+        .checkbox-wrapper input:checked + .custom-checkbox { background: var(--main-color); border-color: var(--main-color); box-shadow: 0 0 10px var(--main-color); }
+        .checkbox-label { font-size: 0.55rem; letter-spacing: 2px; text-transform: uppercase; font-weight: 300; }
 
-        /* Anı Yörüngesi */
-        .orbit-memory {
-            position: absolute; width: 8px; height: 8px; border-radius: 50%;
-            background: #fff; cursor: pointer; transition: 0.3s;
-        }
-        .orbit-memory:hover { transform: scale(3); z-index: 20; box-shadow: 0 0 15px currentColor; }
+        #send-hint { pointer-events: auto; font-size:0.5rem; opacity:0.3; margin-top:30px; letter-spacing:5px; font-weight:100; cursor: pointer; transition: 0.3s; position: relative; z-index: 101;}
+        #send-hint:hover { opacity: 1; color: var(--main-color); }
 
-        /* Premium UI */
-        .premium-lock {
-            position: absolute; bottom: -40px; font-size: 0.6rem; letter-spacing: 2px;
-            color: rgba(255,255,255,0.3); display: flex; align-items: center; gap: 5px;
-            cursor: pointer; transition: 0.3s;
-        }
-        .premium-lock:hover { color: #fbbf24; text-shadow: 0 0 10px #fbbf24; }
-        
-        .sanctuary-title { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-style: italic; color: #fff; opacity: 0.8; margin-bottom: 10px; }
-        .soul-status { font-size: 0.6rem; letter-spacing: 3px; color: var(--star-color); text-transform: uppercase; margin-bottom: 40px; opacity: 0.8; }
+        #daily-insight { pointer-events: auto; position: fixed; bottom: 30px; display: flex; gap: 40px; font-size: 0.55rem; letter-spacing: 2px; opacity: 0.7; flex-wrap: wrap; justify-content: center; width: 90%; transition: 0.5s; font-weight: 200; z-index: 100; }
+        .insight-box { text-align: center; cursor: pointer; transition: 0.3s; }
+        .insight-box:hover { opacity: 1; color: var(--main-color); transform: translateY(-5px); }
+        .insight-box b { display: block; color: var(--main-color); margin-bottom: 5px; font-weight: 400; }
+        #pulse-status { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.1rem; letter-spacing: 0.5px; transition: opacity 1s ease; }
 
-        .close-sanctuary { position: absolute; bottom: 50px; font-size: 0.6rem; letter-spacing: 4px; cursor: pointer; opacity: 0.4; transition: 0.3s; color: #fff; }
-        .close-sanctuary:hover { opacity: 1; color: var(--main-color); }
-
-        /* MODAL KART (Okuma) */
+        /* MODAL KARTLAR */
         .modal-card { 
             display: none; opacity: 0; text-align: center; max-width: 480px; padding: 45px; 
             background: rgba(15, 15, 20, 0.96); border-radius: 40px; backdrop-filter: blur(60px); 
@@ -110,23 +108,50 @@
             position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
             box-shadow: 0 0 120px rgba(0,0,0,0.9);
         }
-        .card-title { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 300; color: #fff; margin-bottom: 5px; font-style: italic; }
-        .premium-badge { background: #fbbf24; color: #000; font-size: 0.5rem; padding: 2px 8px; border-radius: 10px; font-weight: bold; vertical-align: middle; margin-left: 5px; }
+        
+        .card-section { margin-bottom: 30px; border-bottom: 1px solid rgba(255,255,255,0.03); padding-bottom: 20px; }
+        .card-label { font-size: 0.5rem; letter-spacing: 4px; opacity: 0.4; text-transform: uppercase; margin-bottom: 12px; color: var(--main-color); font-family: 'Inter', sans-serif; font-weight: 300; }
+        .card-title, #echo-text, #quote-text { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 300; color: #fff; margin-bottom: 5px; font-style: italic; line-height: 1.5; }
+        .card-subtitle { font-size: 0.7rem; font-weight: 200; font-family: 'Inter', sans-serif; opacity: 0.5; letter-spacing: 1px; }
 
+        .spotify-btn { 
+            background: #1DB954; color: #fff; padding: 12px 30px; border-radius: 50px; 
+            text-decoration: none; font-size: 0.7rem; font-weight: 500; letter-spacing: 1px;
+            display: inline-flex; align-items: center; gap: 8px; margin-top: 10px; transition: 0.3s; 
+            box-shadow: 0 5px 20px rgba(29, 185, 84, 0.2); font-family: 'Inter', sans-serif;
+        }
+        .spotify-btn:hover { transform: scale(1.05); background: #1ed760; box-shadow: 0 5px 30px rgba(29, 185, 84, 0.4); }
+        
+        #delete-btn { display: none; color: #ef4444; font-size: 0.55rem; letter-spacing: 3px; cursor: pointer; margin-top: 30px; opacity: 0.5; transition: 0.3s; padding: 10px 20px; border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 30px; font-family: 'Inter', sans-serif; }
+        #delete-btn:hover { opacity: 1; background: rgba(239, 68, 68, 0.1); }
+        .close-link { color:white; opacity:0.2; font-size:0.55rem; text-decoration:none; letter-spacing: 3px; transition: 0.3s; font-family: 'Inter', sans-serif; }
+        .close-link:hover { opacity: 0.8; letter-spacing: 5px; }
+
+        #chronicle-text { font-family: 'Cormorant Garamond', serif; line-height: 1.8; font-size: 1.2rem; text-align: justify; opacity: 0.9; margin-bottom: 20px; font-weight: 300; }
+        .tale-date { font-size: 5rem; font-weight: 100; opacity: 0.05; position: absolute; top: 0px; right: 30px; pointer-events: none; font-family: 'Inter', sans-serif; }
+
+        .map-ping { position: absolute; width: 4px; height: 4px; background: #fff; border-radius: 50%; animation: ping 3s forwards; box-shadow: 0 0 15px currentColor; }
+        @keyframes ping { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(40); opacity: 0; } }
+        .soul-projectile { position: fixed; width: 5px; height: 5px; border-radius: 50%; background: #fff; z-index: 50; pointer-events: none; box-shadow: 0 0 25px var(--main-color); }
     </style>
 </head>
 <body>
 
     <div id="station-header">UNIVERSAL RELEASE STATION</div>
-    
-    <div id="auth-btn" onclick="toggleSanctuary()">
-        <div class="user-avatar" id="user-avatar"></div>
-        <div class="auth-text" id="auth-text">ENTER SANCTUARY</div>
-    </div>
+    <div id="profile-trigger" onclick="openSanctuary()">MY SANCTUARY</div>
 
     <div id="bg-frame"></div>
     <canvas id="star-canvas"></canvas>
     <div id="map-container"></div>
+    
+    <div id="public-galaxy"></div>
+
+    <div id="sanctuary-layer">
+        <div class="sanctuary-title">Inner Sanctuary</div>
+        <canvas id="thread-canvas"></canvas>
+        <div id="sanctuary-galaxy"></div>
+        <div class="close-sanctuary" onclick="closeSanctuary()">RETURN TO UNIVERSE</div>
+    </div>
     
     <div id="sphere-wrapper"><div id="sphere" onclick="triggerRitual()"></div></div>
 
@@ -134,265 +159,343 @@
         <textarea id="burden-input" placeholder="..." rows="1"></textarea>
         
         <label class="checkbox-wrapper">
-            <input type="checkbox" id="share-toggle" style="display:none;">
+            <input type="checkbox" id="share-toggle">
             <span class="custom-checkbox"></span>
-            <span class="checkbox-label" style="margin-left: 10px;">Send to Universe</span>
+            <span class="checkbox-label">Send to Universe</span>
         </label>
 
-        <p id="send-hint" onclick="triggerRitual()" style="font-size:0.5rem; opacity:0.3; margin-top:30px; letter-spacing:5px; font-weight:100; cursor: pointer;">WHISPER YOUR BURDEN AND PRESS ENTER</p>
+        <p id="send-hint" onclick="triggerRitual()">WHISPER YOUR BURDEN AND PRESS ENTER</p>
     </div>
 
-    <div id="sanctuary-layer">
-        <div class="sanctuary-title">The Core of Your Soul</div>
-        <div class="soul-status" id="soul-status-text">CALCULATING RESONANCE...</div>
-
-        <div id="soul-star-container">
-            <div id="soul-star"></div>
-            </div>
-
-        <div class="premium-lock" onclick="unlockPremium()">
-            <span class="material-icons-outlined" style="font-size: 1rem;">lock</span>
-            <span>UNLOCK FULL HISTORY & SOUL ANALYSIS ($0.99)</span>
+    <div id="daily-insight">
+        <div class="insight-box" onclick="openChronicles()">
+            <b>TODAY'S CHRONICLE</b> <span id="chronicle-status">Read the Tale</span>
         </div>
-
-        <div class="close-sanctuary" onclick="toggleSanctuary()">RETURN TO VOID</div>
+        <div class="insight-box">
+            <b>GLOBAL PULSE</b> <span id="pulse-status">Listening to the void...</span>
+        </div>
     </div>
 
     <div id="prescription-card" class="modal-card">
-        <div id="presc-date" style="font-size:0.55rem; letter-spacing:3px; color:rgba(255,255,255,0.3); margin-bottom:25px;"></div>
-        <div id="user-text-content" style="font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-style: italic; color: #fff; margin-bottom: 30px;">...</div>
-        <div class="card-title" id="echo-text">...</div>
-        <div style="font-size: 0.6rem; opacity: 0.5; margin-top: 10px;">— Etherea AI</div>
-        <div style="margin-top: 30px; cursor: pointer; font-size: 0.6rem; letter-spacing: 2px;" onclick="closeModal('prescription-card')">CLOSE</div>
+        <div id="presc-date" style="font-size:0.55rem; letter-spacing:3px; color:rgba(255,255,255,0.3); margin-bottom:25px; font-weight: 400;"></div>
+        
+        <div id="memory-header" class="card-label" style="text-align: center; margin-bottom: 20px; opacity:0.6;">...</div>
+
+        <div id="memory-text-display" style="display:block; margin-bottom: 30px;">
+            <div id="user-text-content" style="font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-style: italic; color: #fff; opacity:0.9;">...</div>
+        </div>
+
+        <div id="card-dynamic-content">
+            <div class="card-section" id="echo-section">
+                <div class="card-label">THE ECHO</div>
+                <div id="echo-text">...</div>
+                <div id="echo-author" class="card-subtitle" style="margin-top:8px;">— Etherea AI</div>
+            </div>
+
+            <div style="display: flex; gap: 20px; text-align: left;">
+                <div style="flex:1;">
+                    <div class="card-label">WATCH</div>
+                    <div id="movie-title" style="font-size:0.9rem; font-weight:300; opacity:0.8;">...</div>
+                </div>
+                <div style="flex:1;">
+                    <div class="card-label">REMEMBER</div>
+                    <div id="quote-text" style="font-size:0.9rem; font-weight:300; opacity:0.8;">...</div>
+                </div>
+            </div>
+
+            <div class="card-label" style="margin-top: 30px;">LISTEN</div>
+            <div id="action-area"></div>
+        </div>
+
+        <div style="display: flex; justify-content: center; gap: 20px; align-items: center; margin-top: 40px;">
+            <a href="javascript:void(0)" onclick="closeModal('prescription-card')" class="close-link">CLOSE</a>
+            <div id="delete-btn" onclick="deleteCurrentMemory()">FORGET THIS</div>
+        </div>
+    </div>
+
+    <div id="chronicle-card" class="modal-card">
+        <div class="tale-date" id="tale-bg-date">07</div>
+        <div class="card-label" style="margin-bottom: 25px; color: var(--main-color);">THE TALE OF THE WORLD</div>
+        <div id="chronicle-loading" style="display:none;">
+            <p style="opacity: 0.6; font-family:'Cormorant Garamond', serif; font-style:italic;">Yıldızlar bugünün hikayesini dokuyor...</p>
+            <div class="processing" style="width:20px; height:20px; background:var(--main-color); border-radius:50%; margin: 20px auto;"></div>
+        </div>
+        <div id="chronicle-content" style="display:none;">
+            <p id="chronicle-text">...</p>
+            <div class="card-label" style="margin-top: 30px;">COLOR OF THE DAY</div>
+            <div id="tale-color-dot" style="width: 25px; height: 25px; border-radius: 50%; margin: 10px auto; box-shadow: 0 0 20px currentColor;"></div>
+        </div>
+        <a href="javascript:void(0)" onclick="closeModal('chronicle-card')" class="close-link" style="margin-top:30px; display:block;">CLOSE BOOK</a>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { getDatabase, ref, push, set, get, child, query, limitToLast } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+        import { getDatabase, ref, push, set, get, child, onChildAdded, query, limitToLast } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
 
         const firebaseConfig = {
-            apiKey: "AIzaSyBZvD1r8cBGG-67TdxudKszHeQ18C5EO-s", // Kendi API Key'in
+            apiKey: "AIzaSyBZvD1r8cBGG-67TdxudKszHeQ18C5EO-s",
             authDomain: "etherea-soul.firebaseapp.com",
             projectId: "etherea-soul",
             storageBucket: "etherea-soul.firebasestorage.app",
             messagingSenderId: "111436974630",
             appId: "1:111436974630:web:56b62aadc4429c9904f4e7"
         };
-        
-        const GEMINI_API_KEY = "AIzaSyCOfPMaTHBHNAWGPOSKjRXCWyZE3XswAMo"; // Kendi Gemini Key'in
+        const GEMINI_API_KEY = "AIzaSyCOfPMaTHBHNAWGPOSKjRXCWyZE3XswAMo";
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
-        const auth = getAuth(app);
-        const provider = new GoogleAuthProvider();
+        const emotionsRef = ref(db, 'emotions');
+        const publicMemoriesRef = ref(db, 'public_memories');
+        const talesRef = ref(db, 'tales');
 
-        // ELEMENTLER
         const input = document.getElementById('burden-input');
         const sphere = document.getElementById('sphere');
+        const wrapper = document.getElementById('sphere-wrapper');
         const ui = document.getElementById('ui-layer');
-        const sanctuary = document.getElementById('sanctuary-layer');
-        const soulStar = document.getElementById('soul-star');
-        
-        let currentUser = null;
-        let isPremium = false; // Demo için false
+        const mapContainer = document.getElementById('map-container');
+        const publicGalaxy = document.getElementById('public-galaxy');
+        const sanctuaryGalaxy = document.getElementById('sanctuary-galaxy');
+        const sanctuaryLayer = document.getElementById('sanctuary-layer');
+        let activeMemoryIndex = -1;
 
-        // --- AUTH & GİRİŞ ---
-        const authBtn = document.getElementById('auth-btn');
-        const authText = document.getElementById('auth-text');
-        const userAvatar = document.getElementById('user-avatar');
+        // ATMOSFER YÖNETİMİ
+        const recentEmotions = query(emotionsRef, limitToLast(50));
+        onChildAdded(recentEmotions, (snapshot) => { updateGlobalAtmosphere(); });
 
-        // Giriş Durumunu İzle
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                currentUser = user;
-                authText.innerText = "MY SANCTUARY";
-                userAvatar.style.display = "block";
-                // Gerçek avatar yerine renkli top (Tasarımı bozmamak için)
-                userAvatar.style.background = "#38bdf8"; 
-                console.log("Kullanıcı Giriş Yaptı:", user.uid);
-            } else {
-                currentUser = null;
-                authText.innerText = "LOGIN / ENTER";
-                userAvatar.style.display = "none";
-            }
+        async function updateGlobalAtmosphere() {
+            try {
+                const snapshot = await get(recentEmotions);
+                if (snapshot.exists()) {
+                    let moodCounts = { joy:0, sad:0, anger:0, fear:0, neutral:0, tired:0 };
+                    snapshot.forEach((child) => { const m = child.val().mood; if(moodCounts[m] !== undefined) moodCounts[m]++; });
+                    const dominantMood = Object.keys(moodCounts).reduce((a, b) => moodCounts[a] > moodCounts[b] ? a : b);
+                    const dominantColor = lexicon[dominantMood]?.color || '#38bdf8';
+                    
+                    document.documentElement.style.setProperty('--main-color', dominantColor);
+                    
+                    const poeticStatus = {
+                        joy: "The earth is glowing with a quiet hope.",
+                        sad: "A gentle tide of sorrow is washing over the world.",
+                        anger: "The collective soul feels restless and burning.",
+                        fear: "A whisper of anxiety lingers in the air.",
+                        tired: "The world is heavy, seeking a moment of rest.",
+                        neutral: "The universe breathes in balance."
+                    };
+                    
+                    const statusText = document.getElementById('pulse-status');
+                    statusText.style.opacity = 0;
+                    setTimeout(() => {
+                        statusText.innerText = poeticStatus[dominantMood] || poeticStatus.neutral;
+                        statusText.style.color = dominantColor;
+                        statusText.style.opacity = 1;
+                    }, 500);
+                }
+            } catch (e) {}
+        }
+
+        // PUBLIC GALAXY
+        const recentPublic = query(publicMemoriesRef, limitToLast(20));
+        onChildAdded(recentPublic, (snapshot) => {
+            const data = snapshot.val();
+            createStoredOrb(data, -1, 'public'); 
         });
 
-        // Butona Tıklama (Giriş veya Açma)
-        window.toggleSanctuary = function() {
-            if (!currentUser) {
-                // Giriş Yapmamışsa Google Login Aç
-                signInWithPopup(auth, provider).then((result) => {
-                    // Başarılı giriş sonrası Sanctuary aç
-                    openSanctuary();
-                }).catch((error) => {
-                    console.error("Giriş Hatası", error);
-                });
-            } else {
-                // Zaten giriş yapmışsa Sanctuary aç/kapa
-                if (sanctuary.style.display === 'flex') {
-                    sanctuary.style.opacity = '0';
-                    setTimeout(() => sanctuary.style.display = 'none', 1000);
-                } else {
-                    openSanctuary();
+        const floatingOrbs = [];
+
+        function createStoredOrb(data, index, type) {
+            const orb = document.createElement('div'); 
+            orb.className = 'stored-orb';
+            const size = 10 + Math.random() * 15;
+            orb.style.width = size + 'px'; orb.style.height = size + 'px'; 
+            orb.style.background = data.color; orb.style.color = data.color;
+            
+            let x = Math.random() * window.innerWidth;
+            let y = Math.random() * window.innerHeight;
+            let dx = (Math.random() - 0.5) * 0.2; let dy = (Math.random() - 0.5) * 0.2;
+
+            orb.style.left = x + 'px'; orb.style.top = y + 'px';
+            orb.onclick = () => openCard(data, type, index); 
+
+            if(type === 'public') publicGalaxy.appendChild(orb);
+            else sanctuaryGalaxy.appendChild(orb);
+            
+            // Küreyi listeye eklerken tipini de kaydet (Gümüş iplik için önemli)
+            floatingOrbs.push({ element: orb, x, y, dx, dy, type: type });
+        }
+
+        function animateOrbs() {
+            // Önce Canvas'ı temizle
+            const threadCanvas = document.getElementById('thread-canvas');
+            const tCtx = threadCanvas.getContext('2d');
+            threadCanvas.width = window.innerWidth;
+            threadCanvas.height = window.innerHeight;
+            tCtx.clearRect(0, 0, threadCanvas.width, threadCanvas.height);
+
+            // Gümüş İplik Çizimi (Sadece Sanctuary Modunda)
+            if (sanctuaryLayer.style.display !== 'none') {
+                const privateOrbs = floatingOrbs.filter(o => o.type === 'private');
+                if (privateOrbs.length > 1) {
+                    tCtx.beginPath();
+                    tCtx.moveTo(privateOrbs[0].x + 5, privateOrbs[0].y + 5); // +5 merkezleme için
+                    for (let i = 1; i < privateOrbs.length; i++) {
+                        tCtx.lineTo(privateOrbs[i].x + 5, privateOrbs[i].y + 5);
+                    }
+                    tCtx.strokeStyle = 'rgba(255, 255, 255, 0.15)'; // Gümüşümsü soluk renk
+                    tCtx.lineWidth = 1;
+                    tCtx.shadowBlur = 5;
+                    tCtx.shadowColor = 'rgba(255, 255, 255, 0.5)';
+                    tCtx.stroke();
                 }
             }
-        };
 
-        // --- SANCTUARY MANTIĞI & SOUL STAR ---
-        function openSanctuary() {
-            sanctuary.style.display = 'flex';
-            setTimeout(() => sanctuary.style.opacity = '1', 10);
-            
-            // Verileri Çek (Firebase'den)
-            // NOT: Gerçekte 'users/' + currentUser.uid + '/memories' den çekilmeli.
-            // Demo için LocalStorage kullanıyoruz ama mantık aynı.
+            // Küreleri Hareket Ettir
+            floatingOrbs.forEach(orbData => {
+                orbData.x += orbData.dx; orbData.y += orbData.dy;
+                if (orbData.x < 0 || orbData.x > window.innerWidth) orbData.dx *= -1;
+                if (orbData.y < 0 || orbData.y > window.innerHeight) orbData.dy *= -1;
+                orbData.element.style.left = orbData.x + 'px'; orbData.element.style.top = orbData.y + 'px';
+            });
+            requestAnimationFrame(animateOrbs);
+        }
+        animateOrbs();
+
+        // SANCTUARY
+        window.openSanctuary = function() {
+            sanctuaryLayer.style.display = 'flex';
+            setTimeout(() => {
+                sanctuaryLayer.style.opacity = '1';
+                publicGalaxy.style.opacity = '0';
+            }, 10);
+            sanctuaryGalaxy.innerHTML = "";
             const memories = JSON.parse(localStorage.getItem('etherea_memories') || '[]');
-            
-            updateSoulStar(memories);
-            renderConstellation(memories);
-        }
-
-        // Ruh Yıldızını Hesapla (Algoritma)
-        function updateSoulStar(memories) {
-            if (memories.length === 0) return;
-
-            let colorCounts = {};
-            let total = memories.length;
-
-            memories.forEach(m => {
-                colorCounts[m.color] = (colorCounts[m.color] || 0) + 1;
-            });
-
-            // En baskın rengi bul
-            let dominantColor = Object.keys(colorCounts).reduce((a, b) => colorCounts[a] > colorCounts[b] ? a : b);
-            
-            // Yıldızın büyüklüğü anı sayısına göre değişir (Max 200px)
-            let size = 100 + Math.min(total * 5, 100); 
-            
-            soulStar.style.width = size + 'px';
-            soulStar.style.height = size + 'px';
-            soulStar.style.background = dominantColor;
-            soulStar.style.boxShadow = `0 0 60px ${dominantColor}, 0 0 120px ${dominantColor}`;
-            
-            // Durum Metni
-            const statusMap = {
-                "#fbbf24": "RADIANT SUN (JOY)",
-                "#60a5fa": "BLUE GIANT (SORROW)",
-                "#f87171": "RED DWARF (ANGER)",
-                "#a78bfa": "PULSAR (ANXIETY)",
-                "#34d399": "NEBULA (FATIGUE)",
-                "#38bdf8": "WHITE DWARF (BALANCE)"
-            };
-            
-            document.documentElement.style.setProperty('--star-color', dominantColor);
-            document.getElementById('soul-status-text').innerText = statusMap[dominantColor] || "UNKNOWN STAR";
-            document.getElementById('soul-status-text').style.color = dominantColor;
-        }
-
-        // Anı Yörüngesini Çiz
-        function renderConstellation(memories) {
-            const container = document.getElementById('soul-star-container');
-            // Eski gezegenleri temizle (Sadece yıldızı bırak)
-            const oldPlanets = document.querySelectorAll('.orbit-memory');
-            oldPlanets.forEach(p => p.remove());
-
-            // Premium Kontrolü: Parasızsa sadece son 5 anı
-            const limit = isPremium ? memories.length : 5;
-            const visibleMemories = memories.slice(-limit);
-
-            visibleMemories.forEach((mem, i) => {
-                const planet = document.createElement('div');
-                planet.className = 'orbit-memory';
-                planet.style.background = mem.color;
-                planet.style.color = mem.color; // Gölge için
-                
-                // Rastgele yörünge (Basit matematik)
-                const angle = (i / visibleMemories.length) * Math.PI * 2;
-                const radius = 120 + Math.random() * 80; // Yıldızdan uzaklık
-                const x = Math.cos(angle) * radius;
-                const y = Math.sin(angle) * radius;
-
-                planet.style.transform = `translate(${x}px, ${y}px)`;
-                
-                planet.onclick = () => openCard(mem);
-                container.appendChild(planet);
-            });
-        }
-
-        window.unlockPremium = function() {
-            // Buraya ödeme sistemi (Stripe/Iyzico) bağlanır.
-            // Simülasyon:
-            alert("Etherea Portal açılıyor... (Ödeme Simülasyonu)\nStardust Üyeliği: $0.99");
-            isPremium = true;
-            document.querySelector('.premium-lock').innerHTML = "<span style='color:#fbbf24'>UNLOCKED: ETERNAL MEMORY</span>";
-            openSanctuary(); // Yeniden render et (Tüm anılar gelir)
+            // Gümüş ipliğin düzgün çalışması için temizle ve yeniden yükle
+            // Diziyi tersten silmek veya filtrelemek gerekirse diye, önce ekranı temizliyoruz.
+            // Private olanları floatingOrbs'dan temizle
+            for (let i = floatingOrbs.length - 1; i >= 0; i--) {
+                if (floatingOrbs[i].type === 'private') floatingOrbs.splice(i, 1);
+            }
+            memories.forEach((mem, index) => createStoredOrb(mem, index, 'private'));
         };
 
-        // --- RİTÜEL (GÜNCELLENDİ: ARTIK DATABASE'E KAYDEDİYOR) ---
+        window.closeSanctuary = function() {
+            sanctuaryLayer.style.opacity = '0';
+            publicGalaxy.style.opacity = '1';
+            setTimeout(() => {
+                sanctuaryLayer.style.display = 'none';
+                sanctuaryGalaxy.innerHTML = "";
+                // Private küreleri bellekten de temizle
+                for (let i = floatingOrbs.length - 1; i >= 0; i--) {
+                    if (floatingOrbs[i].type === 'private') floatingOrbs.splice(i, 1);
+                }
+            }, 1000);
+        };
+
+        // RİTÜEL
         window.triggerRitual = async function() {
             const text = input.value;
             if(text.trim().length < 1) return;
             const isPublic = document.getElementById('share-toggle').checked;
 
             const analysis = analyzeSoul(text);
-            
-            sphere.classList.add("imploding");
-            
-            // 1. AI CEVABI
+            sphere.classList.add("imploding"); starBurst(analysis.color); playDroneSound(analysis.moodKey);
+            push(emotionsRef, { color: analysis.color, mood: analysis.moodKey, timestamp: Date.now() });
+
             const echoResponse = await getPersonalEcho(text, analysis.moodKey);
-            
+            const dbEntry = curationDB[analysis.moodKey];
+            const selectedMovie = dbEntry.movies[Math.floor(Math.random() * dbEntry.movies.length)];
+            const selectedQuoteFull = dbEntry.quotes[Math.floor(Math.random() * dbEntry.quotes.length)];
+            const selectedSong = dbEntry.songs[0];
+            const timestamp = new Date();
+
             const memoryData = { 
-                ...analysis, text: text, echo: echoResponse, 
-                dateStr: new Date().toLocaleDateString('tr-TR'),
-                timeStr: new Date().toLocaleTimeString('tr-TR'),
-                timestamp: Date.now()
+                ...analysis, text: text, color: analysis.color, 
+                echo: echoResponse, movie: selectedMovie, quote: selectedQuoteFull, 
+                auth: 'Unknown', songName: selectedSong.name, songUrl: selectedSong.url,
+                dateStr: timestamp.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' }),
+                timeStr: timestamp.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })
             };
 
-            // 2. KAYIT (Firebase + Local)
             const myMemories = JSON.parse(localStorage.getItem('etherea_memories') || '[]');
             myMemories.push(memoryData);
             localStorage.setItem('etherea_memories', JSON.stringify(myMemories));
 
-            // Eğer giriş yapmışsa Cloud'a da at
-            if (currentUser) {
-                // push(ref(db, 'users/' + currentUser.uid + '/memories'), memoryData);
-            }
+            if (isPublic) push(publicMemoriesRef, memoryData);
 
-            ui.style.opacity = "0"; 
+            fireSoulProjectile(analysis.color, Math.random()*window.innerWidth, Math.random()*window.innerHeight/2 + window.innerHeight/2);
+            ui.style.opacity = "0"; document.getElementById('daily-insight').style.opacity = "0"; wrapper.style.transform = "scale(0)";
+
             setTimeout(() => { 
-                ui.style.display = "none"; 
-                openCard(memoryData); 
-            }, 1500);
+                ui.style.display = "none"; document.getElementById('daily-insight').style.display = "none"; wrapper.style.display = "none"; 
+                openCard(memoryData, 'new', -1); 
+            }, 1000);
         };
 
-        function openCard(data) {
+        // KART
+        function openCard(data, type, index) {
+            activeMemoryIndex = index;
             const card = document.getElementById('prescription-card');
+            const deleteBtn = document.getElementById('delete-btn');
+            const header = document.getElementById('memory-header');
+            
             card.style.display = "block";
             setTimeout(() => {
                 card.style.opacity = "1";
                 document.getElementById('user-text-content').innerText = `"${data.text}"`;
-                document.getElementById('echo-text').innerText = `"${data.echo}"`;
-                document.getElementById('presc-date').innerText = data.dateStr + " • " + data.timeStr;
+                document.getElementById('user-text-content').style.color = data.color;
+                
+                if(type === 'new') typeWriter(`"${data.echo}"`, 'echo-text', 30);
+                else document.getElementById('echo-text').innerText = `"${data.echo}"`;
+
+                document.getElementById('movie-title').innerText = data.movie;
+                document.getElementById('quote-text').innerText = `"${data.quote}"`;
+                document.getElementById('action-area').innerHTML = `<a href="${data.songUrl}" target="_blank" class="spotify-btn"><span style="font-size:1.2rem;">♫</span> Listen on Spotify</a>`;
+                
+                if(type === 'new') {
+                    document.getElementById('presc-date').innerText = "AZ ÖNCE"; header.innerText = "RITUAL COMPLETE"; deleteBtn.style.display = "none";
+                } else if (type === 'private') {
+                    document.getElementById('presc-date').innerText = `${data.dateStr} • ${data.timeStr}`; header.innerText = "YOUR MEMORY"; deleteBtn.style.display = "block";
+                } else if (type === 'public') {
+                    document.getElementById('presc-date').innerText = "A WHISPER FROM THE UNIVERSE"; header.innerText = "ANONYMOUS SOUL"; deleteBtn.style.display = "none";
+                }
             }, 50);
         }
 
-        window.closeModal = function(id) {
-            const el = document.getElementById(id);
-            el.style.opacity = '0';
-            setTimeout(() => {
-                el.style.display = 'none';
-                if (id === 'prescription-card') location.reload();
-            }, 1000);
+        // DİĞERLERİ
+        function typeWriter(text, elementId, speed = 30) { const element = document.getElementById(elementId); element.innerHTML = ""; let i = 0; function type() { if (i < text.length) { element.innerHTML += text.charAt(i); i++; setTimeout(type, speed); } } type(); }
+        async function getPersonalEcho(text, mood) {
+            const prompt = `Kullanıcı: "${text}". His: "${mood}". Etherea olarak ona sıcak, şiirsel, kısa bir cevap yaz (Max 2 cümle). Türkçe.`;
+            try { const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({contents:[{parts:[{text:prompt}]}]}) }); const d = await r.json(); return d.candidates[0].content.parts[0].text; } catch(e){return "Yalnız değilsin.";}
+        }
+        window.openChronicles = async function() {
+            const modal = document.getElementById('chronicle-card'); const loading = document.getElementById('chronicle-loading'); const content = document.getElementById('chronicle-content'); const colorDot = document.getElementById('tale-color-dot'); const bgDate = document.getElementById('tale-bg-date');
+            const today = new Date().toISOString().split('T')[0]; const dayNum = new Date().getDate(); bgDate.innerText = dayNum < 10 ? '0'+dayNum : dayNum;
+            modal.style.display = 'block'; setTimeout(() => modal.style.opacity = '1', 10);
+            const s = await get(child(ref(db), `tales/${today}`));
+            if (s.exists()) { const d = s.val(); loading.style.display='none'; content.style.display='block'; typeWriter(d.story, 'chronicle-text', 20); colorDot.style.background=d.color; colorDot.style.color=d.color; document.documentElement.style.setProperty('--main-color', d.color); }
+            else { 
+                loading.style.display='block'; content.style.display='none';
+                const rs = await get(query(emotionsRef, limitToLast(50)));
+                let mc={joy:0,sad:0,anger:0,fear:0,neutral:0,tired:0}, dm='neutral', dc='#38bdf8';
+                if(rs.exists()) { rs.forEach(c => { const m=c.val().mood; if(mc[m]!==undefined) mc[m]++; }); dm=Object.keys(mc).reduce((a,b)=>mc[a]>mc[b]?a:b); dc=lexicon[dm]?.color||'#38bdf8'; }
+                const st = await (async()=>{const p=`Tarih ${today}. Dünya en çok "${dm}" hissediyor. Kısa mistik masal yaz. Türkçe.`; try{const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:p}]}]})});const d=await r.json();return d.candidates[0].content.parts[0].text;}catch(e){return "Sessizlik.";}})();
+                await set(ref(db, `tales/${today}`), {story:st, color:dc, mood:dm}); window.openChronicles();
+            }
         };
-
-        // YARDIMCILAR (AYNI)
-        const lexicon = { joy:{words:["mutlu","harika"],color:"#fbbf24"}, sad:{words:["üzgün","ağla"],color:"#60a5fa"}, anger:{words:["kızgın","öfke"],color:"#f87171"}, fear:{words:["kork","kaygı"],color:"#a78bfa"}, tired:{words:["yorgun","uyku"],color:"#34d399"}, neutral:{words:[],color:"#38bdf8"} };
         function analyzeSoul(text) { text=text.toLowerCase(); let fm='neutral', c='#38bdf8'; for(let m in lexicon){if(m==='neutral')continue; if(lexicon[m].words.some(w=>text.includes(w))){fm=m; c=lexicon[m].color; break;}} return {moodKey:fm, color:c}; }
-        async function getPersonalEcho(text, mood) { const prompt = `Kullanıcı: "${text}". His: "${mood}". Etherea olarak ona sıcak, şiirsel, kısa bir cevap yaz (Max 2 cümle). Türkçe.`; try { const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({contents:[{parts:[{text:prompt}]}]}) }); const d = await r.json(); return d.candidates[0].content.parts[0].text; } catch(e){return "Yalnız değilsin.";} }
+        function fireSoulProjectile(c, tx, ty) { const p=document.createElement('div'); p.className='soul-projectile'; p.style.background=c; p.style.left='50%'; p.style.top='50%'; document.body.appendChild(p); p.animate([{transform:'translate(-50%,-50%)'},{transform:`translate(${tx-window.innerWidth/2}px,${ty-window.innerHeight/2}px) scale(0)`}],{duration:1000}).onfinish=()=>p.remove(); setTimeout(()=>createMapPing((tx/window.innerWidth)*100, (ty/window.innerHeight)*100, c),900); }
+        function createMapPing(x, y, c) { const p=document.createElement('div'); p.className='map-ping'; p.style.left=x+'%'; p.style.top=y+'%'; p.style.color=c; mapContainer.appendChild(p); setTimeout(()=>p.remove(),3000); }
+        function starBurst(c) { for(let i=0; i<50; i++){ const s=document.createElement('div'); s.className='star-particle'; s.style.left='50%'; s.style.top='50%'; s.style.background=c; document.body.appendChild(s); const a=Math.random()*Math.PI*2; const d=Math.random()*400+100; s.animate([{transform:'translate(0,0) scale(1)',opacity:1},{transform:`translate(${Math.cos(a)*d}px, ${Math.sin(a)*d}px) scale(0)`,opacity:0}],{duration:2000}).onfinish=()=>s.remove(); } }
+        let audioCtx; function playDroneSound(t) { if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)(); const o=audioCtx.createOscillator(),g=audioCtx.createGain(); if(t==='joy')o.frequency.value=432;else if(t==='sad')o.frequency.value=140;else if(t==='anger')o.frequency.value=80;else if(t==='fear')o.frequency.value=220;else o.frequency.value=300; o.connect(g); g.connect(audioCtx.destination); const n=audioCtx.currentTime; g.gain.setValueAtTime(0,n); g.gain.linearRampToValueAtTime(0.3,n+1); g.gain.linearRampToValueAtTime(0,n+6); o.start(n); o.stop(n+6); }
+        window.closeModal = function(id) { const el=document.getElementById(id); el.style.opacity='0'; setTimeout(()=>{el.style.display='none'; if(id==='prescription-card' && document.getElementById('presc-date').innerText==="AZ ÖNCE") location.reload();},1000); };
+        window.deleteCurrentMemory = function() { if(activeMemoryIndex===-1)return; let m=JSON.parse(localStorage.getItem('etherea_memories')||'[]'); m.splice(activeMemoryIndex,1); localStorage.setItem('etherea_memories',JSON.stringify(m)); window.closeModal('prescription-card'); setTimeout(openSanctuary,500); };
+        
+        const lexicon = { joy:{words:["mutlu","harika"],color:"#fbbf24"}, sad:{words:["üzgün","ağla"],color:"#60a5fa"}, anger:{words:["kızgın","öfke"],color:"#f87171"}, fear:{words:["kork","kaygı"],color:"#a78bfa"}, tired:{words:["yorgun","uyku"],color:"#34d399"}, neutral:{words:[],color:"#38bdf8"} };
+        const curationDB = { joy:{movies:["Amélie","Soul"],quotes:["Güneş dön."],songs:[{name:"Happy Hits",url:"http://open.spotify.com/playlist/37i9dQZF1DWSf2RDTDayIx"}]}, sad:{movies:["Eternal Sunshine"],quotes:["Kırık kalp."],songs:[{name:"Melancholic Piano",url:"http://open.spotify.com/playlist/37i9dQZF1DX4sWSpwq3LiO"}]}, anger:{movies:["Fight Club"],quotes:["Ateş."],songs:[{name:"Calm Down",url:"http://open.spotify.com/playlist/37i9dQZF1DXaImRpG7HXqp"}]}, fear:{movies:["Life of Pi"],quotes:["Korku yok."],songs:[{name:"Safe Haven",url:"http://open.spotify.com/playlist/37i9dQZF1DWZqd5JICZI0u"}]}, tired:{movies:["Into the Wild"],quotes:["Dinlen."],songs:[{name:"Deep Sleep",url:"http://open.spotify.com/playlist/37i9dQZF1DWZd79rJ6a7lp"}]}, neutral:{movies:["Interstellar"],quotes:["Evren."],songs:[{name:"Deep Focus",url:"http://open.spotify.com/playlist/37i9dQZF1DWZeKCadgRdKQ"}]} };
 
-        // YILDIZLAR
+        input.addEventListener('input', (e)=>{ const v=e.target.value.toLowerCase(); const a=analyzeSoul(v); sphere.style.background=a.color; document.documentElement.style.setProperty('--main-color',a.color); });
+        input.addEventListener('keypress', (e)=>{ if(e.key==='Enter' && !e.shiftKey){e.preventDefault(); triggerRitual();} });
         const cvs=document.getElementById('star-canvas'); const cx=cvs.getContext('2d'); let st=[]; function initSt(){ cvs.width=window.innerWidth; cvs.height=window.innerHeight; st=[]; for(let i=0;i<150;i++)st.push({x:Math.random()*cvs.width,y:Math.random()*cvs.height,s:Math.random()*1.5,sp:Math.random()*0.4+0.1}); } function drSt(){ cx.clearRect(0,0,cvs.width,cvs.height); cx.fillStyle="white"; st.forEach(s=>{ cx.beginPath(); cx.arc(s.x,s.y,s.s,0,Math.PI*2); cx.fill(); s.y-=s.sp*0.2; if(s.y<0)s.y=cvs.height; }); requestAnimationFrame(drSt); } initSt(); drSt();
     </script>
 </body>
 </html>
+
