@@ -3,160 +3,396 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Etherea | Digital Soul Ritual</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;500&display=swap" rel="stylesheet">
+    <title>Etherea | Soul Star</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
     <style>
-        :root { --main-color: #38bdf8; }
+        /* --- ATMOSFER --- */
+        :root { --main-color: #38bdf8; --bg-opacity: 0.12; --star-color: #fff; }
         body {
             margin: 0; padding: 0; background: #010409;
             height: 100vh; display: flex; flex-direction: column;
             justify-content: center; align-items: center;
             color: #f0f6fc; font-family: 'Inter', sans-serif; overflow: hidden;
+            transition: background 3s ease;
         }
 
-        #map-container { position: fixed; bottom: 5%; left: 5%; width: 90%; height: 35vh; z-index: 0; opacity: 0.08; pointer-events: none; background: url('https://upload.wikimedia.org/wikipedia/commons/8/80/World_map_back_grey.svg') no-repeat center; background-size: contain; }
+        /* KATMANLAR */
+        #star-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+        #map-container { position: fixed; bottom: 5%; left: 5%; width: 90%; height: 40vh; z-index: 1; opacity: var(--bg-opacity); pointer-events: none; background: url('https://upload.wikimedia.org/wikipedia/commons/8/80/World_map_back_grey.svg') no-repeat center; background-size: contain; transition: filter 2s ease; animation: global-breathe 10s infinite ease-in-out; }
+        @keyframes global-breathe { 0%, 100% { opacity: 0.15; filter: drop-shadow(0 0 10px var(--main-color)); } 50% { opacity: 0.25; filter: drop-shadow(0 0 35px var(--main-color)); } }
+
+        #station-header { position: fixed; top: 40px; font-size: 0.6rem; letter-spacing: 12px; opacity: 0.3; font-weight: 200; text-align: center; width: 100%; text-transform: uppercase; z-index: 100; pointer-events: none; }
         
-        .star-particle { position: absolute; width: 3px; height: 3px; background: white; border-radius: 50%; pointer-events: none; z-index: 100; }
+        /* GİRİŞ / PROFİL BUTONU (User Auth) */
+        #auth-btn {
+            position: fixed; top: 40px; right: 40px; pointer-events: auto; z-index: 500;
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            padding: 10px 20px; border-radius: 30px; cursor: pointer; transition: 0.3s;
+            display: flex; align-items: center; gap: 10px;
+        }
+        #auth-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--main-color); }
+        .user-avatar { width: 20px; height: 20px; border-radius: 50%; background: var(--main-color); display: none; }
+        .auth-text { font-size: 0.55rem; letter-spacing: 2px; text-transform: uppercase; color: #fff; }
 
-        /* Dinamik Küre */
+        /* ANA KÜRE */
+        #sphere-wrapper { position: relative; z-index: 60; transition: transform 1.5s cubic-bezier(0.19, 1, 0.22, 1); margin-bottom: 30px; }
         #sphere {
-            position: absolute; width: 150px; height: 150px;
-            background: #fff; border-radius: 50%;
-            box-shadow: 0 0 50px var(--main-color), 0 0 100px rgba(255, 255, 255, 0.1);
-            animation: breathe 6s infinite ease-in-out; z-index: 1;
+            width: 140px; height: 140px; background: #fff; border-radius: 50%;
+            box-shadow: 0 0 50px var(--main-color), 0 0 100px rgba(255,255,255,0.15), inset 0 0 30px rgba(255,255,255,0.5);
+            animation: breathe 8s infinite ease-in-out;
+            transition: all 1s ease; cursor: pointer; pointer-events: auto;
+        }
+        @keyframes breathe { 0%, 100% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.1); opacity: 0.9; } }
+        .imploding { transform: scale(0.05) !important; opacity: 0; filter: blur(10px); transition: all 0.8s ease-in !important; }
+
+        /* UI */
+        #ui-layer { position: relative; z-index: 100; text-align: center; width: 90%; max-width: 600px; transition: 0.5s; pointer-events: none; }
+        textarea { 
+            pointer-events: auto; background: transparent; border: none; border-bottom: 1px solid rgba(255,255,255,0.2); 
+            color: #fff; caret-color: var(--main-color); 
+            font-family: 'Cormorant Garamond', serif; font-size: 2.2rem; font-style: italic; font-weight: 300;
+            text-align: center; outline: none; width: 100%; padding: 15px 0; 
+            resize: none; overflow: hidden; 
+        }
+        textarea::placeholder { color: rgba(255,255,255,0.15); font-family: 'Inter', sans-serif; font-size: 1.1rem; font-style: normal; letter-spacing: 3px; font-weight: 200; }
+        
+        .checkbox-wrapper { pointer-events: auto; margin-top: 25px; display: flex; justify-content: center; align-items: center; gap: 10px; cursor: pointer; opacity: 0.4; transition: 0.3s; position: relative; z-index: 101;}
+        .checkbox-wrapper:hover { opacity: 1; color: var(--main-color); }
+        .custom-checkbox { width: 10px; height: 10px; border: 1px solid #fff; border-radius: 50%; display: inline-block; }
+        input:checked + .custom-checkbox { background: var(--main-color); border-color: var(--main-color); box-shadow: 0 0 10px var(--main-color); }
+        
+        /* SANCTUARY (SIĞINAK) - YENİ TASARIM */
+        #sanctuary-layer { 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 600; 
+            background: radial-gradient(circle at center, #050510 0%, #000 100%); opacity: 0; transition: opacity 1s ease;
+            justify-content: center; align-items: center; flex-direction: column; pointer-events: auto;
+        }
+        
+        /* SOUL STAR (Ruh Yıldızı) */
+        #soul-star-container { position: relative; width: 300px; height: 300px; display: flex; justify-content: center; align-items: center; margin-bottom: 50px; }
+        #soul-star {
+            width: 100px; height: 100px; border-radius: 50%;
+            background: var(--star-color);
+            box-shadow: 0 0 60px var(--star-color), 0 0 120px var(--star-color);
+            animation: star-pulse 4s infinite ease-in-out;
             transition: all 2s ease;
+            position: relative; z-index: 10;
         }
+        @keyframes star-pulse { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.1); opacity: 1; box-shadow: 0 0 90px var(--star-color), 0 0 150px var(--star-color); } }
 
-        @keyframes breathe { 0%, 100% { transform: scale(1); opacity: 0.4; filter: blur(2px); } 50% { transform: scale(1.1); opacity: 0.7; filter: blur(0px); } }
-
-        #ui-layer { z-index: 10; text-align: center; width: 90%; max-width: 500px; }
-        input { background: transparent; border: none; border-bottom: 1px solid rgba(255,255,255,0.1); color: transparent; caret-color: var(--main-color); font-size: 1.4rem; text-align: center; outline: none; width: 100%; padding: 15px 0; font-weight: 100; }
-
-        #prescription-card {
-            display: none; opacity: 0; text-align: center;
-            max-width: 450px; padding: 40px;
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 40px; backdrop-filter: blur(30px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: all 1.5s ease;
+        /* Anı Yörüngesi */
+        .orbit-memory {
+            position: absolute; width: 8px; height: 8px; border-radius: 50%;
+            background: #fff; cursor: pointer; transition: 0.3s;
         }
+        .orbit-memory:hover { transform: scale(3); z-index: 20; box-shadow: 0 0 15px currentColor; }
 
-        .premium-box {
-            margin-top: 30px; padding: 20px; border-radius: 20px;
-            background: linear-gradient(145deg, rgba(56, 189, 248, 0.1), rgba(0,0,0,0));
-            border: 1px solid rgba(56, 189, 248, 0.2);
+        /* Premium UI */
+        .premium-lock {
+            position: absolute; bottom: -40px; font-size: 0.6rem; letter-spacing: 2px;
+            color: rgba(255,255,255,0.3); display: flex; align-items: center; gap: 5px;
+            cursor: pointer; transition: 0.3s;
         }
+        .premium-lock:hover { color: #fbbf24; text-shadow: 0 0 10px #fbbf24; }
+        
+        .sanctuary-title { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-style: italic; color: #fff; opacity: 0.8; margin-bottom: 10px; }
+        .soul-status { font-size: 0.6rem; letter-spacing: 3px; color: var(--star-color); text-transform: uppercase; margin-bottom: 40px; opacity: 0.8; }
 
-        .spotify-btn { background: #1DB954; color: white; padding: 10px 25px; border-radius: 30px; text-decoration: none; font-size: 0.75rem; display: inline-block; margin-bottom: 15px; }
-        .buy-btn { color: var(--main-color); text-decoration: none; font-size: 0.8rem; font-weight: 500; display: block; }
+        .close-sanctuary { position: absolute; bottom: 50px; font-size: 0.6rem; letter-spacing: 4px; cursor: pointer; opacity: 0.4; transition: 0.3s; color: #fff; }
+        .close-sanctuary:hover { opacity: 1; color: var(--main-color); }
+
+        /* MODAL KART (Okuma) */
+        .modal-card { 
+            display: none; opacity: 0; text-align: center; max-width: 480px; padding: 45px; 
+            background: rgba(15, 15, 20, 0.96); border-radius: 40px; backdrop-filter: blur(60px); 
+            border: 1px solid rgba(255,255,255,0.05); transition: all 1.5s ease; z-index: 2000; 
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+            box-shadow: 0 0 120px rgba(0,0,0,0.9);
+        }
+        .card-title { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 300; color: #fff; margin-bottom: 5px; font-style: italic; }
+        .premium-badge { background: #fbbf24; color: #000; font-size: 0.5rem; padding: 2px 8px; border-radius: 10px; font-weight: bold; vertical-align: middle; margin-left: 5px; }
+
     </style>
 </head>
 <body>
 
+    <div id="station-header">UNIVERSAL RELEASE STATION</div>
+    
+    <div id="auth-btn" onclick="toggleSanctuary()">
+        <div class="user-avatar" id="user-avatar"></div>
+        <div class="auth-text" id="auth-text">ENTER SANCTUARY</div>
+    </div>
+
+    <div id="bg-frame"></div>
+    <canvas id="star-canvas"></canvas>
     <div id="map-container"></div>
-    <div id="sphere"></div>
+    
+    <div id="sphere-wrapper"><div id="sphere" onclick="triggerRitual()"></div></div>
 
     <div id="ui-layer">
-        <h1 style="font-weight:100; opacity:0.4; font-size:0.8rem; letter-spacing:4px;">UNIVERSAL RELEASE STATION</h1>
-        <input type="text" id="burden-input" placeholder="..." autocomplete="off">
-        <p style="font-size:0.5rem; opacity:0.2; margin-top:20px; letter-spacing:3px;">WHISPER YOUR BURDEN AND PRESS ENTER</p>
+        <textarea id="burden-input" placeholder="..." rows="1"></textarea>
+        
+        <label class="checkbox-wrapper">
+            <input type="checkbox" id="share-toggle" style="display:none;">
+            <span class="custom-checkbox"></span>
+            <span class="checkbox-label" style="margin-left: 10px;">Send to Universe</span>
+        </label>
+
+        <p id="send-hint" onclick="triggerRitual()" style="font-size:0.5rem; opacity:0.3; margin-top:30px; letter-spacing:5px; font-weight:100; cursor: pointer;">WHISPER YOUR BURDEN AND PRESS ENTER</p>
     </div>
 
-    <div id="prescription-card">
-        <div id="ritual-title" style="font-size:0.6rem; letter-spacing:3px; margin-bottom:20px; color: var(--main-color);">CONNECTING TO THE STARS...</div>
-        <p id="presc-content" style="font-weight:100; line-height:1.8; margin-bottom: 25px; min-height: 3em;"></p>
-        
-        <div id="quote-area" style="font-style: italic; font-weight: 100; font-size: 1.1rem; color: #fff;"></div>
-        <div id="author-area" style="font-size: 0.6rem; opacity: 0.4; margin: 15px 0 30px 0; letter-spacing: 2px;"></div>
+    <div id="sanctuary-layer">
+        <div class="sanctuary-title">The Core of Your Soul</div>
+        <div class="soul-status" id="soul-status-text">CALCULATING RESONANCE...</div>
 
-        <div id="action-area"></div>
-        
-        <div class="premium-box">
-            <p style="font-size:0.7rem; opacity:0.6; margin-bottom:15px;">Bu duyguyu tamamen dönüştürmek ister misin?</p>
-            <a href="#" class="buy-btn" id="premium-link">"Shadow Work" Rehberini Edin ($2.99) →</a>
+        <div id="soul-star-container">
+            <div id="soul-star"></div>
+            </div>
+
+        <div class="premium-lock" onclick="unlockPremium()">
+            <span class="material-icons-outlined" style="font-size: 1rem;">lock</span>
+            <span>UNLOCK FULL HISTORY & SOUL ANALYSIS ($0.99)</span>
         </div>
-        
-        <br>
-        <a href="javascript:location.reload()" style="color:white; opacity:0.2; font-size:0.6rem; text-decoration:none;">YENİ BİR NİYET BIRAK</a>
+
+        <div class="close-sanctuary" onclick="toggleSanctuary()">RETURN TO VOID</div>
     </div>
 
-    <script>
-        const input = document.getElementById('burden-input');
-        const ui = document.getElementById('ui-layer');
-        const sphere = document.getElementById('sphere');
-        const card = document.getElementById('prescription-card');
-        const content = document.getElementById('presc-content');
-        const quoteArea = document.getElementById('quote-area');
-        const authorArea = document.getElementById('author-area');
-        const actionArea = document.getElementById('action-area');
+    <div id="prescription-card" class="modal-card">
+        <div id="presc-date" style="font-size:0.55rem; letter-spacing:3px; color:rgba(255,255,255,0.3); margin-bottom:25px;"></div>
+        <div id="user-text-content" style="font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-style: italic; color: #fff; margin-bottom: 30px;">...</div>
+        <div class="card-title" id="echo-text">...</div>
+        <div style="font-size: 0.6rem; opacity: 0.5; margin-top: 10px;">— Etherea AI</div>
+        <div style="margin-top: 30px; cursor: pointer; font-size: 0.6rem; letter-spacing: 2px;" onclick="closeModal('prescription-card')">CLOSE</div>
+    </div>
 
-        const soulLibrary = {
-            yorgun: { color: "#fbbf24", msg: "Yorgunluğun, kutsal bir molanın vaktinin geldiğini söylüyor.", quote: "Dur ve dinlen; bir günah işliyormuşsun gibi hissetmeden.", author: "Seneca", sp: "5" },
-            uzgun: { color: "#60a5fa", msg: "Hüzün, kalbin derinleşme çabasıdır. Bırak seni yıkasın.", quote: "Acı seni kırmaz, sadece içindeki ışığa yer açar.", author: "Rumi", sp: "8" },
-            yalniz: { color: "#a78bfa", msg: "Yalnızlık, kendi ruhunla tanışman için verilmiş sessiz bir davettir.", quote: "Dışarıya bakan rüya görür, içeriye bakan uyanır.", author: "Carl Jung", sp: "3" },
-            ofke: { color: "#f87171", msg: "Öfken, sınırlarının ihlal edildiğini söyleyen bir koruyucudur. Onu serbest bırak.", quote: "Öfkeyi tutmak, zehri kendin içip başkasının ölmesini beklemektir.", author: "Buddha", sp: "12" },
-            default: { color: "#38bdf8", msg: "Evren niyetini duydu. Şu an tam olman gereken yerdesin.", quote: "Zihnini serbest bırak, kalbin yolu bulacaktır.", author: "Lao Tzu", sp: "1" }
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getDatabase, ref, push, set, get, child, query, limitToLast } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBZvD1r8cBGG-67TdxudKszHeQ18C5EO-s", // Kendi API Key'in
+            authDomain: "etherea-soul.firebaseapp.com",
+            projectId: "etherea-soul",
+            storageBucket: "etherea-soul.firebasestorage.app",
+            messagingSenderId: "111436974630",
+            appId: "1:111436974630:web:56b62aadc4429c9904f4e7"
         };
+        
+        const GEMINI_API_KEY = "AIzaSyCOfPMaTHBHNAWGPOSKjRXCWyZE3XswAMo"; // Kendi Gemini Key'in
 
-        function typeWriter(text, element, speed = 50) {
-            let i = 0;
-            element.innerHTML = "";
-            function type() {
-                if (i < text.length) {
-                    element.innerHTML += text.charAt(i);
-                    i++;
-                    setTimeout(type, speed);
-                }
-            }
-            type();
-        }
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
 
-        function starBurst() {
-            for(let i=0; i<40; i++) {
-                const s = document.createElement('div');
-                s.className = 'star-particle';
-                s.style.left = '50%'; s.style.top = '50%';
-                document.body.appendChild(s);
-                const a = Math.random()*Math.PI*2;
-                const d = Math.random()*400+100;
-                s.animate([{transform:'translate(0,0)', opacity:1}, {transform:`translate(${Math.cos(a)*d}px, ${Math.sin(a)*d}px)`, opacity:0}], {duration: 2000, easing:'ease-out'}).onfinish = () => s.remove();
-            }
-        }
+        // ELEMENTLER
+        const input = document.getElementById('burden-input');
+        const sphere = document.getElementById('sphere');
+        const ui = document.getElementById('ui-layer');
+        const sanctuary = document.getElementById('sanctuary-layer');
+        const soulStar = document.getElementById('soul-star');
+        
+        let currentUser = null;
+        let isPremium = false; // Demo için false
 
-        input.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && input.value.trim().length > 1) {
-                const val = input.value.toLowerCase();
-                let soul = soulLibrary.default;
-                
-                if(val.includes('yorgun')) soul = soulLibrary.yorgun;
-                else if(val.includes('üzgün') || val.includes('hüzün')) soul = soulLibrary.uzgun;
-                else if(val.includes('yalnız')) soul = soulLibrary.yalniz;
-                else if(val.includes('ofke') || val.includes('kızgın')) soul = soulLibrary.ofke;
+        // --- AUTH & GİRİŞ ---
+        const authBtn = document.getElementById('auth-btn');
+        const authText = document.getElementById('auth-text');
+        const userAvatar = document.getElementById('user-avatar');
 
-                // Dinamik Renk Değişimi
-                document.documentElement.style.setProperty('--main-color', soul.color);
-                sphere.style.background = soul.color;
-
-                starBurst();
-                ui.style.opacity = "0";
-                sphere.style.transform = "scale(0.1)";
-
-                setTimeout(() => {
-                    ui.style.display = "none"; sphere.style.display = "none";
-                    card.style.display = "block";
-                    setTimeout(() => {
-                        card.style.opacity = "1";
-                        document.getElementById('ritual-title').innerText = "RITUAL COMPLETE";
-                        typeWriter(soul.msg, content, 40);
-                        setTimeout(() => {
-                            typeWriter(`"${soul.quote}"`, quoteArea, 30);
-                            authorArea.innerText = `— ${soul.author}`;
-                            actionArea.innerHTML = `<a href="http://googleusercontent.com/spotify.com/${soul.sp}" target="_blank" class="spotify-btn">♫ Listen to Soul Frequency</a>`;
-                        }, 2500);
-                    }, 100);
-                }, 1500);
+        // Giriş Durumunu İzle
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                authText.innerText = "MY SANCTUARY";
+                userAvatar.style.display = "block";
+                // Gerçek avatar yerine renkli top (Tasarımı bozmamak için)
+                userAvatar.style.background = "#38bdf8"; 
+                console.log("Kullanıcı Giriş Yaptı:", user.uid);
+            } else {
+                currentUser = null;
+                authText.innerText = "LOGIN / ENTER";
+                userAvatar.style.display = "none";
             }
         });
+
+        // Butona Tıklama (Giriş veya Açma)
+        window.toggleSanctuary = function() {
+            if (!currentUser) {
+                // Giriş Yapmamışsa Google Login Aç
+                signInWithPopup(auth, provider).then((result) => {
+                    // Başarılı giriş sonrası Sanctuary aç
+                    openSanctuary();
+                }).catch((error) => {
+                    console.error("Giriş Hatası", error);
+                });
+            } else {
+                // Zaten giriş yapmışsa Sanctuary aç/kapa
+                if (sanctuary.style.display === 'flex') {
+                    sanctuary.style.opacity = '0';
+                    setTimeout(() => sanctuary.style.display = 'none', 1000);
+                } else {
+                    openSanctuary();
+                }
+            }
+        };
+
+        // --- SANCTUARY MANTIĞI & SOUL STAR ---
+        function openSanctuary() {
+            sanctuary.style.display = 'flex';
+            setTimeout(() => sanctuary.style.opacity = '1', 10);
+            
+            // Verileri Çek (Firebase'den)
+            // NOT: Gerçekte 'users/' + currentUser.uid + '/memories' den çekilmeli.
+            // Demo için LocalStorage kullanıyoruz ama mantık aynı.
+            const memories = JSON.parse(localStorage.getItem('etherea_memories') || '[]');
+            
+            updateSoulStar(memories);
+            renderConstellation(memories);
+        }
+
+        // Ruh Yıldızını Hesapla (Algoritma)
+        function updateSoulStar(memories) {
+            if (memories.length === 0) return;
+
+            let colorCounts = {};
+            let total = memories.length;
+
+            memories.forEach(m => {
+                colorCounts[m.color] = (colorCounts[m.color] || 0) + 1;
+            });
+
+            // En baskın rengi bul
+            let dominantColor = Object.keys(colorCounts).reduce((a, b) => colorCounts[a] > colorCounts[b] ? a : b);
+            
+            // Yıldızın büyüklüğü anı sayısına göre değişir (Max 200px)
+            let size = 100 + Math.min(total * 5, 100); 
+            
+            soulStar.style.width = size + 'px';
+            soulStar.style.height = size + 'px';
+            soulStar.style.background = dominantColor;
+            soulStar.style.boxShadow = `0 0 60px ${dominantColor}, 0 0 120px ${dominantColor}`;
+            
+            // Durum Metni
+            const statusMap = {
+                "#fbbf24": "RADIANT SUN (JOY)",
+                "#60a5fa": "BLUE GIANT (SORROW)",
+                "#f87171": "RED DWARF (ANGER)",
+                "#a78bfa": "PULSAR (ANXIETY)",
+                "#34d399": "NEBULA (FATIGUE)",
+                "#38bdf8": "WHITE DWARF (BALANCE)"
+            };
+            
+            document.documentElement.style.setProperty('--star-color', dominantColor);
+            document.getElementById('soul-status-text').innerText = statusMap[dominantColor] || "UNKNOWN STAR";
+            document.getElementById('soul-status-text').style.color = dominantColor;
+        }
+
+        // Anı Yörüngesini Çiz
+        function renderConstellation(memories) {
+            const container = document.getElementById('soul-star-container');
+            // Eski gezegenleri temizle (Sadece yıldızı bırak)
+            const oldPlanets = document.querySelectorAll('.orbit-memory');
+            oldPlanets.forEach(p => p.remove());
+
+            // Premium Kontrolü: Parasızsa sadece son 5 anı
+            const limit = isPremium ? memories.length : 5;
+            const visibleMemories = memories.slice(-limit);
+
+            visibleMemories.forEach((mem, i) => {
+                const planet = document.createElement('div');
+                planet.className = 'orbit-memory';
+                planet.style.background = mem.color;
+                planet.style.color = mem.color; // Gölge için
+                
+                // Rastgele yörünge (Basit matematik)
+                const angle = (i / visibleMemories.length) * Math.PI * 2;
+                const radius = 120 + Math.random() * 80; // Yıldızdan uzaklık
+                const x = Math.cos(angle) * radius;
+                const y = Math.sin(angle) * radius;
+
+                planet.style.transform = `translate(${x}px, ${y}px)`;
+                
+                planet.onclick = () => openCard(mem);
+                container.appendChild(planet);
+            });
+        }
+
+        window.unlockPremium = function() {
+            // Buraya ödeme sistemi (Stripe/Iyzico) bağlanır.
+            // Simülasyon:
+            alert("Etherea Portal açılıyor... (Ödeme Simülasyonu)\nStardust Üyeliği: $0.99");
+            isPremium = true;
+            document.querySelector('.premium-lock').innerHTML = "<span style='color:#fbbf24'>UNLOCKED: ETERNAL MEMORY</span>";
+            openSanctuary(); // Yeniden render et (Tüm anılar gelir)
+        };
+
+        // --- RİTÜEL (GÜNCELLENDİ: ARTIK DATABASE'E KAYDEDİYOR) ---
+        window.triggerRitual = async function() {
+            const text = input.value;
+            if(text.trim().length < 1) return;
+            const isPublic = document.getElementById('share-toggle').checked;
+
+            const analysis = analyzeSoul(text);
+            
+            sphere.classList.add("imploding");
+            
+            // 1. AI CEVABI
+            const echoResponse = await getPersonalEcho(text, analysis.moodKey);
+            
+            const memoryData = { 
+                ...analysis, text: text, echo: echoResponse, 
+                dateStr: new Date().toLocaleDateString('tr-TR'),
+                timeStr: new Date().toLocaleTimeString('tr-TR'),
+                timestamp: Date.now()
+            };
+
+            // 2. KAYIT (Firebase + Local)
+            const myMemories = JSON.parse(localStorage.getItem('etherea_memories') || '[]');
+            myMemories.push(memoryData);
+            localStorage.setItem('etherea_memories', JSON.stringify(myMemories));
+
+            // Eğer giriş yapmışsa Cloud'a da at
+            if (currentUser) {
+                // push(ref(db, 'users/' + currentUser.uid + '/memories'), memoryData);
+            }
+
+            ui.style.opacity = "0"; 
+            setTimeout(() => { 
+                ui.style.display = "none"; 
+                openCard(memoryData); 
+            }, 1500);
+        };
+
+        function openCard(data) {
+            const card = document.getElementById('prescription-card');
+            card.style.display = "block";
+            setTimeout(() => {
+                card.style.opacity = "1";
+                document.getElementById('user-text-content').innerText = `"${data.text}"`;
+                document.getElementById('echo-text').innerText = `"${data.echo}"`;
+                document.getElementById('presc-date').innerText = data.dateStr + " • " + data.timeStr;
+            }, 50);
+        }
+
+        window.closeModal = function(id) {
+            const el = document.getElementById(id);
+            el.style.opacity = '0';
+            setTimeout(() => {
+                el.style.display = 'none';
+                if (id === 'prescription-card') location.reload();
+            }, 1000);
+        };
+
+        // YARDIMCILAR (AYNI)
+        const lexicon = { joy:{words:["mutlu","harika"],color:"#fbbf24"}, sad:{words:["üzgün","ağla"],color:"#60a5fa"}, anger:{words:["kızgın","öfke"],color:"#f87171"}, fear:{words:["kork","kaygı"],color:"#a78bfa"}, tired:{words:["yorgun","uyku"],color:"#34d399"}, neutral:{words:[],color:"#38bdf8"} };
+        function analyzeSoul(text) { text=text.toLowerCase(); let fm='neutral', c='#38bdf8'; for(let m in lexicon){if(m==='neutral')continue; if(lexicon[m].words.some(w=>text.includes(w))){fm=m; c=lexicon[m].color; break;}} return {moodKey:fm, color:c}; }
+        async function getPersonalEcho(text, mood) { const prompt = `Kullanıcı: "${text}". His: "${mood}". Etherea olarak ona sıcak, şiirsel, kısa bir cevap yaz (Max 2 cümle). Türkçe.`; try { const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({contents:[{parts:[{text:prompt}]}]}) }); const d = await r.json(); return d.candidates[0].content.parts[0].text; } catch(e){return "Yalnız değilsin.";} }
+
+        // YILDIZLAR
+        const cvs=document.getElementById('star-canvas'); const cx=cvs.getContext('2d'); let st=[]; function initSt(){ cvs.width=window.innerWidth; cvs.height=window.innerHeight; st=[]; for(let i=0;i<150;i++)st.push({x:Math.random()*cvs.width,y:Math.random()*cvs.height,s:Math.random()*1.5,sp:Math.random()*0.4+0.1}); } function drSt(){ cx.clearRect(0,0,cvs.width,cvs.height); cx.fillStyle="white"; st.forEach(s=>{ cx.beginPath(); cx.arc(s.x,s.y,s.s,0,Math.PI*2); cx.fill(); s.y-=s.sp*0.2; if(s.y<0)s.y=cvs.height; }); requestAnimationFrame(drSt); } initSt(); drSt();
     </script>
 </body>
 </html>
