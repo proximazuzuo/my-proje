@@ -3,41 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Etherea | The Living Universe</title>
+    <title>Etherea | The Beginning</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
     <style>
         /* --- ATMOSFER --- */
         :root { --main-color: #38bdf8; --bg-opacity: 0.12; --star-color: #fff; }
         body {
-            margin: 0; padding: 0; background: #000;
+            margin: 0; padding: 0; background: #000; /* Başlangıçta tam siyah */
             height: 100vh; display: flex; flex-direction: column;
             justify-content: center; align-items: center;
             color: #f0f6fc; font-family: 'Inter', sans-serif; overflow: hidden;
-            transition: background 3s ease; user-select: none; /* Basılı tutma için seçim engelleme */
+            transition: background 3s ease;
         }
 
-        /* --- PHASE 1: GİRİŞ SİHRİ --- */
+        /* --- PHASE 1: GİRİŞ SİHRİ KATMANI --- */
         #intro-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #000; z-index: 9999;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             transition: opacity 2s ease-in-out;
         }
+        
         #intro-seed {
             width: 4px; height: 4px; background: #fff; border-radius: 50%;
             box-shadow: 0 0 20px #fff, 0 0 40px var(--main-color);
             animation: seed-pulse 4s infinite ease-in-out;
             transition: transform 1.5s cubic-bezier(0.7, 0, 0.3, 1);
         }
-        @keyframes seed-pulse { 0%, 100% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(3); opacity: 1; box-shadow: 0 0 50px #fff, 0 0 80px var(--main-color); } }
-        .intro-text { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; letter-spacing: 5px; color: rgba(255,255,255,0.7); margin-top: 40px; opacity: 0; animation: fade-in-out 6s infinite; text-align: center; font-style: italic; }
-        @keyframes fade-in-out { 0%, 100% { opacity: 0; } 50% { opacity: 1; } }
-        #enter-btn { margin-top: 50px; background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 15px 40px; letter-spacing: 4px; font-size: 0.7rem; cursor: pointer; transition: 0.5s; opacity: 0; pointer-events: none; font-family: 'Inter', sans-serif; text-transform: uppercase; border-radius: 50px; }
+        
+        @keyframes seed-pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(3); opacity: 1; box-shadow: 0 0 50px #fff, 0 0 80px var(--main-color); }
+        }
+
+        .intro-text {
+            font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; letter-spacing: 5px;
+            color: rgba(255,255,255,0.7); margin-top: 40px; opacity: 0;
+            animation: fade-in-out 6s infinite; text-align: center; font-style: italic;
+        }
+
+        @keyframes fade-in-out {
+            0%, 100% { opacity: 0; } 50% { opacity: 1; }
+        }
+
+        #enter-btn {
+            margin-top: 50px; background: transparent; border: 1px solid rgba(255,255,255,0.2);
+            color: #fff; padding: 15px 40px; letter-spacing: 4px; font-size: 0.7rem;
+            cursor: pointer; transition: 0.5s; opacity: 0; pointer-events: none; /* Başlangıçta gizli */
+            font-family: 'Inter', sans-serif; text-transform: uppercase; border-radius: 50px;
+        }
         #enter-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--main-color); color: var(--main-color); box-shadow: 0 0 20px rgba(56, 189, 248, 0.2); }
 
-        /* --- ANA UYGULAMA --- */
-        #app-container { opacity: 0; transition: opacity 3s ease; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        /* --- ANA UYGULAMA KATMANLARI --- */
+        #app-container { opacity: 0; transition: opacity 3s ease; } /* Her şeyi kapsar */
 
         #star-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
         #map-container { position: fixed; bottom: 5%; left: 5%; width: 90%; height: 40vh; z-index: 1; opacity: var(--bg-opacity); pointer-events: none; background: url('https://upload.wikimedia.org/wikipedia/commons/8/80/World_map_back_grey.svg') no-repeat center; background-size: contain; transition: filter 2s ease; animation: global-breathe 10s infinite ease-in-out; }
@@ -45,45 +64,55 @@
 
         #station-header { position: fixed; top: 40px; font-size: 0.6rem; letter-spacing: 12px; opacity: 0.3; font-weight: 200; text-align: center; width: 100%; text-transform: uppercase; z-index: 100; pointer-events: none; }
         
-        #auth-btn { position: fixed; top: 40px; right: 40px; pointer-events: auto; z-index: 500; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 10px 20px; border-radius: 30px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 10px; }
+        /* AUTH BTN */
+        #auth-btn {
+            position: fixed; top: 40px; right: 40px; pointer-events: auto; z-index: 500;
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            padding: 10px 20px; border-radius: 30px; cursor: pointer; transition: 0.3s;
+            display: flex; align-items: center; gap: 10px;
+        }
         #auth-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--main-color); }
         .user-avatar { width: 20px; height: 20px; border-radius: 50%; background: var(--main-color); display: none; }
         .auth-text { font-size: 0.55rem; letter-spacing: 2px; text-transform: uppercase; color: #fff; }
 
-        /* PHASE 2: CANLI KÜRE VE ETKİLEŞİM */
-        #sphere-wrapper { 
-            position: relative; z-index: 60; margin-bottom: 30px; 
-            width: 300px; height: 300px; /* Geniş alan mouse takibi için */
-            display: flex; justify-content: center; align-items: center;
-            pointer-events: none; /* Wrapper tıklamayı engellemesin */
+        /* GALAKSİLER */
+        #public-galaxy { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; pointer-events: none; }
+        
+        /* SANCTUARY */
+        #sanctuary-layer { 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 600; 
+            background: radial-gradient(circle at center, #050510 0%, #000 100%); opacity: 0; transition: opacity 1s ease;
+            justify-content: center; align-items: center; flex-direction: column; pointer-events: auto;
         }
-        #sphere {
-            pointer-events: auto; width: 140px; height: 140px; background: #fff; border-radius: 50%;
-            box-shadow: 0 0 50px var(--main-color), 0 0 100px rgba(255,255,255,0.15), inset 0 0 30px rgba(255,255,255,0.5);
-            /* Manyetik efekt için transition'ı kaldırdık (anlık tepki) veya çok kısa tuttuk */
-            transition: transform 0.1s ease-out, width 0.3s, height 0.3s; 
-            cursor: pointer; position: relative;
-            animation: breathe 8s infinite ease-in-out;
-        }
-        /* Basılı Tutma (Charging) Efekti */
-        #sphere.charging { animation: shake-charge 0.1s infinite !important; filter: brightness(1.2); transform: scale(0.95); }
-        @keyframes shake-charge { 0% { transform: translate(1px, 1px) scale(0.95); } 100% { transform: translate(-1px, -1px) scale(0.95); } }
-        /* Patlama (Implosion) */
-        .imploding { transform: scale(0.01) !important; opacity: 0; filter: blur(10px); transition: all 0.5s ease-in !important; }
-        @keyframes breathe { 0%, 100% { transform: scale(1); opacity: 0.5; filter: blur(1px); } 50% { transform: scale(1.1); opacity: 0.9; filter: blur(0px); } }
+        #sanctuary-galaxy { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: auto; z-index: 602; }
+        #thread-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 601; }
 
-        /* MIKROFON BUTONU */
-        #mic-btn {
-            position: absolute; bottom: 20px; /* Kürenin altında */
-            width: 40px; height: 40px; border-radius: 50%;
-            border: 1px solid rgba(255,255,255,0.2);
-            display: flex; justify-content: center; align-items: center;
-            color: rgba(255,255,255,0.4); cursor: pointer; pointer-events: auto;
-            transition: 0.3s; z-index: 70;
+        /* SOUL STAR */
+        #soul-star-container { position: relative; width: 300px; height: 300px; display: flex; justify-content: center; align-items: center; margin-bottom: 50px; z-index: 605; }
+        #soul-star {
+            width: 100px; height: 100px; border-radius: 50%; background: var(--star-color);
+            box-shadow: 0 0 60px var(--star-color), 0 0 120px var(--star-color);
+            animation: star-pulse 4s infinite ease-in-out; transition: all 2s ease; position: relative; z-index: 10;
         }
-        #mic-btn:hover { color: var(--main-color); border-color: var(--main-color); box-shadow: 0 0 15px var(--main-color); }
-        .mic-active { color: #f87171 !important; border-color: #f87171 !important; animation: mic-pulse 1s infinite; }
-        @keyframes mic-pulse { 0% { box-shadow: 0 0 0 rgba(248,113,113,0.2); } 100% { box-shadow: 0 0 30px rgba(248,113,113,0.6); } }
+        @keyframes star-pulse { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.1); opacity: 1; box-shadow: 0 0 90px var(--star-color), 0 0 150px var(--star-color); } }
+        .orbit-memory { position: absolute; width: 8px; height: 8px; border-radius: 50%; background: #fff; cursor: pointer; transition: 0.3s; }
+        .orbit-memory:hover { transform: scale(3); z-index: 20; box-shadow: 0 0 15px currentColor; }
+        .premium-lock { position: absolute; bottom: -40px; font-size: 0.6rem; letter-spacing: 2px; color: rgba(255,255,255,0.3); display: flex; align-items: center; gap: 5px; cursor: pointer; transition: 0.3s; }
+        .premium-lock:hover { color: #fbbf24; text-shadow: 0 0 10px #fbbf24; }
+        .sanctuary-title { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-style: italic; color: #fff; opacity: 0.8; margin-bottom: 10px; z-index: 605; }
+        .soul-status { font-size: 0.6rem; letter-spacing: 3px; color: var(--star-color); text-transform: uppercase; margin-bottom: 40px; opacity: 0.8; z-index: 605; }
+        .close-sanctuary { position: absolute; bottom: 50px; font-size: 0.6rem; letter-spacing: 4px; cursor: pointer; opacity: 0.4; transition: 0.3s; color: #fff; z-index: 605; }
+        .close-sanctuary:hover { opacity: 1; color: var(--main-color); }
+
+        /* KÜRELER */
+        .stored-orb { position: absolute; border-radius: 50%; cursor: pointer; pointer-events: auto; box-shadow: 0 0 20px currentColor; transition: transform 0.4s ease; opacity: 0.7; }
+        .stored-orb:hover { transform: scale(4) !important; filter: brightness(1.5); z-index: 1000; opacity: 1; }
+
+        /* MERKEZ KÜRE */
+        #sphere-wrapper { position: relative; z-index: 60; transition: transform 1.5s cubic-bezier(0.19, 1, 0.22, 1); margin-bottom: 30px; pointer-events: none; }
+        #sphere { pointer-events: auto; width: 140px; height: 140px; background: #fff; border-radius: 50%; box-shadow: 0 0 50px var(--main-color), 0 0 100px rgba(255,255,255,0.15), inset 0 0 30px rgba(255,255,255,0.5); animation: breathe 8s infinite ease-in-out; transition: all 1s ease; cursor: pointer; }
+        @keyframes breathe { 0%, 100% { transform: scale(1); opacity: 0.5; filter: blur(1px); } 50% { transform: scale(1.1); opacity: 0.9; filter: blur(0px); } }
+        .imploding { transform: scale(0.05) !important; opacity: 0; filter: blur(10px); transition: all 0.8s ease-in !important; }
 
         /* UI */
         #ui-layer { position: relative; z-index: 100; text-align: center; width: 90%; max-width: 600px; transition: 0.5s; pointer-events: none; }
@@ -103,27 +132,6 @@
         .insight-box:hover { opacity: 1; color: var(--main-color); transform: translateY(-5px); }
         .insight-box b { display: block; color: var(--main-color); margin-bottom: 5px; font-weight: 400; }
         #pulse-status { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.1rem; letter-spacing: 0.5px; transition: opacity 1s ease; }
-
-        /* GALAKSİLER & SANCTUARY */
-        #public-galaxy { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; pointer-events: none; }
-        #sanctuary-layer { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 600; background: radial-gradient(circle at center, #050510 0%, #000 100%); opacity: 0; transition: opacity 1s ease; justify-content: center; align-items: center; flex-direction: column; pointer-events: auto; }
-        #sanctuary-galaxy { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: auto; z-index: 602; }
-        #thread-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 601; }
-        #soul-star-container { position: relative; width: 300px; height: 300px; display: flex; justify-content: center; align-items: center; margin-bottom: 50px; z-index: 605; }
-        #soul-star { width: 100px; height: 100px; border-radius: 50%; background: var(--star-color); box-shadow: 0 0 60px var(--star-color), 0 0 120px var(--star-color); animation: star-pulse 4s infinite ease-in-out; transition: all 2s ease; position: relative; z-index: 10; }
-        @keyframes star-pulse { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.1); opacity: 1; box-shadow: 0 0 90px var(--star-color), 0 0 150px var(--star-color); } }
-        .orbit-memory { position: absolute; width: 8px; height: 8px; border-radius: 50%; background: #fff; cursor: pointer; transition: 0.3s; }
-        .orbit-memory:hover { transform: scale(3); z-index: 20; box-shadow: 0 0 15px currentColor; }
-        .premium-lock { position: absolute; bottom: -40px; font-size: 0.6rem; letter-spacing: 2px; color: rgba(255,255,255,0.3); display: flex; align-items: center; gap: 5px; cursor: pointer; transition: 0.3s; }
-        .premium-lock:hover { color: #fbbf24; text-shadow: 0 0 10px #fbbf24; }
-        .sanctuary-title { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-style: italic; color: #fff; opacity: 0.8; margin-bottom: 10px; z-index: 605; }
-        .soul-status { font-size: 0.6rem; letter-spacing: 3px; color: var(--star-color); text-transform: uppercase; margin-bottom: 40px; opacity: 0.8; z-index: 605; }
-        .close-sanctuary { position: absolute; bottom: 50px; font-size: 0.6rem; letter-spacing: 4px; cursor: pointer; opacity: 0.4; transition: 0.3s; color: #fff; z-index: 605; }
-        .close-sanctuary:hover { opacity: 1; color: var(--main-color); }
-
-        /* KÜRELER */
-        .stored-orb { position: absolute; border-radius: 50%; cursor: pointer; pointer-events: auto; box-shadow: 0 0 20px currentColor; transition: transform 0.4s ease; opacity: 0.7; }
-        .stored-orb:hover { transform: scale(4) !important; filter: brightness(1.5); z-index: 1000; opacity: 1; }
 
         /* MODAL KARTLAR */
         .modal-card { display: none; opacity: 0; text-align: center; max-width: 480px; padding: 45px; background: rgba(15, 15, 20, 0.96); border-radius: 40px; backdrop-filter: blur(60px); border: 1px solid rgba(255,255,255,0.05); transition: all 1.5s ease; z-index: 2000; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 120px rgba(0,0,0,0.9); }
@@ -182,17 +190,7 @@
             <div class="close-sanctuary" onclick="closeSanctuary()">RETURN TO UNIVERSE</div>
         </div>
         
-        <div id="sphere-wrapper">
-            <div id="sphere" 
-                 onmousedown="startCharge()" 
-                 onmouseup="releaseCharge()" 
-                 ontouchstart="startCharge()" 
-                 ontouchend="releaseCharge()">
-            </div>
-            <div id="mic-btn" onclick="toggleVoice()">
-                <span class="material-icons-outlined">mic</span>
-            </div>
-        </div>
+        <div id="sphere-wrapper"><div id="sphere" onclick="triggerRitual()"></div></div>
 
         <div id="ui-layer">
             <textarea id="burden-input" placeholder="..." rows="1"></textarea>
@@ -201,7 +199,7 @@
                 <span class="custom-checkbox"></span>
                 <span class="checkbox-label" style="margin-left: 10px;">Send to Universe</span>
             </label>
-            <p id="send-hint" onclick="triggerRitual()">HOLD SPHERE TO RELEASE or PRESS ENTER</p>
+            <p id="send-hint" onclick="triggerRitual()">WHISPER YOUR BURDEN AND PRESS ENTER</p>
         </div>
 
         <div id="daily-insight">
@@ -284,15 +282,12 @@
         const publicMemoriesRef = ref(db, 'public_memories');
         const talesRef = ref(db, 'tales');
 
-        // --- GLOBAL DEĞİŞKENLER (PHASE 2 İÇİN) ---
-        let chargeTimer;
-        let isCharging = false;
-        let isMagnetic = false; // Intro bitene kadar false
-
-        // --- GİRİŞ SİHRİ (INTRO) ---
+        // GİRİŞ SİHRİ (INTRO) MANTIĞI
         async function initIntro() {
             const msgEl = document.getElementById('intro-message');
             const btn = document.getElementById('enter-btn');
+            
+            // Lokasyon Çekme (Ankara'dan bir ruh...)
             try {
                 const response = await fetch('https://ipapi.co/json/');
                 const data = await response.json();
@@ -301,6 +296,8 @@
             } catch (e) {
                 msgEl.innerText = "A wandering soul is approaching...";
             }
+
+            // Breathe Efekti
             setTimeout(() => { msgEl.innerText = "Breathe in..."; }, 2500);
             setTimeout(() => { msgEl.innerText = "Breathe out..."; }, 5000);
             setTimeout(() => { 
@@ -310,109 +307,29 @@
             }, 7500);
         }
         
+        // Site açılınca Intro başlasın
         window.addEventListener('load', initIntro);
 
-        // Global'e taşıdık
+        // Big Bang ve Giriş
         window.enterTheVoid = function() {
             const overlay = document.getElementById('intro-overlay');
             const seed = document.getElementById('intro-seed');
             const app = document.getElementById('app-container');
-            const audio = new Audio('https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=deep-space-112379.mp3'); 
+            const audio = new Audio('https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=deep-space-112379.mp3'); // Örnek Ambient Ses
             
             audio.volume = 0.4;
             audio.loop = true;
             audio.play().catch(e => console.log("Audio play blocked"));
 
+            // Patlama Efekti
             seed.style.transform = "scale(500)";
             seed.style.opacity = "0";
             
             setTimeout(() => {
                 overlay.style.opacity = "0";
                 app.style.opacity = "1";
-                setTimeout(() => { 
-                    overlay.style.display = "none"; 
-                    isMagnetic = true; // Manyetik küreyi aktif et
-                }, 2000);
+                setTimeout(() => { overlay.style.display = "none"; }, 2000);
             }, 800);
-        };
-
-        // --- PHASE 2: MANYETİK KÜRE ---
-        const sphere = document.getElementById('sphere');
-        const wrapper = document.getElementById('sphere-wrapper');
-
-        document.addEventListener('mousemove', (e) => {
-            if (!isMagnetic) return; // Intro bitmediyse çalışma
-            if (document.getElementById('sanctuary-layer').style.display === 'flex') return; // Profil açıksa çalışma
-
-            const rect = wrapper.getBoundingClientRect();
-            const centerX = rect.left + rect.width / 2;
-            const centerY = rect.top + rect.height / 2;
-            const dx = e.clientX - centerX;
-            const dy = e.clientY - centerY;
-            const dist = Math.sqrt(dx*dx + dy*dy);
-
-            if (dist < 300) {
-                const moveX = dx * 0.15;
-                const moveY = dy * 0.15;
-                sphere.style.transform = `translate(${moveX}px, ${moveY}px)`;
-            } else {
-                sphere.style.transform = `translate(0, 0)`;
-            }
-        });
-
-        // --- PHASE 2: BASILI TUT VE BIRAK (HOLD-TO-RELEASE) ---
-        // Global scope'a ekliyoruz
-        window.startCharge = function() {
-            const input = document.getElementById('burden-input');
-            if(input.value.trim().length < 1) return;
-            
-            isCharging = true;
-            sphere.classList.add('charging');
-            
-            chargeTimer = setTimeout(() => {
-                if(isCharging) {
-                    triggerRitual();
-                    isCharging = false;
-                    sphere.classList.remove('charging');
-                }
-            }, 1500); // 1.5 saniye basılı tut
-        };
-
-        window.releaseCharge = function() {
-            isCharging = false;
-            clearTimeout(chargeTimer);
-            sphere.classList.remove('charging');
-        };
-
-        // --- PHASE 2: MİKROFON (SESLİ KOMUT) ---
-        let recognition;
-        window.toggleVoice = function() {
-            const input = document.getElementById('burden-input');
-            const micBtn = document.getElementById('mic-btn');
-
-            if (!('webkitSpeechRecognition' in window)) { 
-                alert("Ses desteği tarayıcınızda yok."); 
-                return; 
-            }
-            
-            if (!recognition) {
-                recognition = new webkitSpeechRecognition();
-                recognition.lang = 'tr-TR';
-                recognition.onresult = (event) => {
-                    const transcript = event.results[0][0].transcript;
-                    input.value = transcript;
-                    micBtn.classList.remove('mic-active');
-                    // Otomatik analiz et ve rengi değiştir
-                    const analysis = analyzeSoul(transcript);
-                    sphere.style.background = analysis.color;
-                    document.documentElement.style.setProperty('--main-color', analysis.color);
-                };
-                recognition.onend = () => micBtn.classList.remove('mic-active');
-            }
-            
-            micBtn.classList.add('mic-active');
-            recognition.start();
-            input.placeholder = "Dinliyorum...";
         };
 
         // --- AUTH & USER ---
@@ -428,6 +345,7 @@
                 authText.innerText = "MY SANCTUARY";
                 userAvatar.style.display = "block";
                 userAvatar.style.background = "#38bdf8"; 
+                // Gerçek resim varsa: userAvatar.style.backgroundImage = `url(${user.photoURL})`;
             } else {
                 currentUser = null;
                 authText.innerText = "LOGIN / ENTER";
@@ -456,10 +374,12 @@
             sanctuaryGalaxy.innerHTML = "";
             const memories = JSON.parse(localStorage.getItem('etherea_memories') || '[]');
             
+            // Performans Limiti ve Ruh Yıldızı
             const recentMemories = memories.slice(-30);
             updateSoulStar(memories);
-            renderConstellation(memories); 
+            renderConstellation(memories); // Yıldız etrafına dizilim
             
+            // Yüzen Küreler (Sadece Süsleme)
             recentMemories.forEach((mem, index) => {
                 const originalIndex = memories.indexOf(mem);
                 createStoredOrb(mem, originalIndex, 'private');
@@ -474,6 +394,7 @@
             setTimeout(() => { sanctuaryLayer.style.display = 'none'; document.getElementById('sanctuary-galaxy').innerHTML = ""; }, 1000);
         };
 
+        // Ruh Yıldızı Mantığı
         function updateSoulStar(memories) {
             const soulStar = document.getElementById('soul-star');
             if (memories.length === 0) return;
@@ -492,11 +413,12 @@
             document.getElementById('soul-status-text').style.color = dominantColor;
         }
 
+        // Yörünge (Constellation)
         function renderConstellation(memories) {
             const container = document.getElementById('soul-star-container');
             const oldPlanets = document.querySelectorAll('.orbit-memory');
             oldPlanets.forEach(p => p.remove());
-            const limit = isPremium ? memories.length : 8; 
+            const limit = isPremium ? memories.length : 8; // Premium değilse az göster
             const visibleMemories = memories.slice(-limit);
             visibleMemories.forEach((mem, i) => {
                 const planet = document.createElement('div');
@@ -518,6 +440,8 @@
         };
 
         // --- GLOBAL VE KÜRE MANTIĞI ---
+        const input = document.getElementById('burden-input');
+        const sphere = document.getElementById('sphere');
         const ui = document.getElementById('ui-layer');
         const publicGalaxy = document.getElementById('public-galaxy');
         const sanctuaryGalaxy = document.getElementById('sanctuary-galaxy');
@@ -558,17 +482,6 @@
             floatingOrbs.push({ element: orb, x, y, dx, dy });
         }
         function animateOrbs() {
-            // Gümüş İplik Çizimi (Sanctuary)
-            const canvas = document.getElementById('thread-canvas');
-            const tCtx = canvas.getContext('2d');
-            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-            tCtx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            if (document.getElementById('sanctuary-layer').style.display === 'flex') {
-                // Sadece private olanları al, ama floatingOrbs içinde mixed olabilir. 
-                // index9'da floatingOrbs'u temizliyorduk, burada da yapmalıyız openSanctuary içinde.
-            }
-
             floatingOrbs.forEach(orbData => {
                 orbData.x += orbData.dx; orbData.y += orbData.dy;
                 if (orbData.x < 0 || orbData.x > window.innerWidth) orbData.dx *= -1;
@@ -581,16 +494,12 @@
 
         // RİTÜEL
         window.triggerRitual = async function() {
-            const input = document.getElementById('burden-input');
             const text = input.value;
             if(text.trim().length < 1) return;
             const isPublic = document.getElementById('share-toggle').checked;
             const analysis = analyzeSoul(text);
-            
             sphere.classList.add("imploding"); starBurst(analysis.color); playDroneSound(analysis.moodKey);
-            
             push(emotionsRef, { color: analysis.color, mood: analysis.moodKey, timestamp: Date.now() });
-            
             const echoResponse = await getPersonalEcho(text, analysis.moodKey);
             const dbEntry = curationDB[analysis.moodKey]; const selectedMovie = dbEntry.movies[Math.floor(Math.random() * dbEntry.movies.length)]; const selectedQuoteFull = dbEntry.quotes[Math.floor(Math.random() * dbEntry.quotes.length)]; const selectedSong = dbEntry.songs[0]; const timestamp = new Date();
             const memoryData = { ...analysis, text: text, color: analysis.color, echo: echoResponse, movie: selectedMovie, quote: selectedQuoteFull, auth: 'Unknown', songName: selectedSong.name, songUrl: selectedSong.url, dateStr: timestamp.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' }), timeStr: timestamp.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }) };
@@ -624,7 +533,6 @@
         const lexicon = { joy:{words:["mutlu","harika"],color:"#fbbf24"}, sad:{words:["üzgün","ağla"],color:"#60a5fa"}, anger:{words:["kızgın","öfke"],color:"#f87171"}, fear:{words:["kork","kaygı"],color:"#a78bfa"}, tired:{words:["yorgun","uyku"],color:"#34d399"}, neutral:{words:[],color:"#38bdf8"} };
         const curationDB = { joy:{movies:["Amélie","Soul"],quotes:["Güneş dön."],songs:[{name:"Happy Hits",url:"http://open.spotify.com/playlist/37i9dQZF1DWSf2RDTDayIx"}]}, sad:{movies:["Eternal Sunshine"],quotes:["Kırık kalp."],songs:[{name:"Melancholic Piano",url:"http://open.spotify.com/playlist/37i9dQZF1DX4sWSpwq3LiO"}]}, anger:{movies:["Fight Club"],quotes:["Ateş."],songs:[{name:"Calm Down",url:"http://open.spotify.com/playlist/37i9dQZF1DXaImRpG7HXqp"}]}, fear:{movies:["Life of Pi"],quotes:["Korku yok."],songs:[{name:"Safe Haven",url:"http://open.spotify.com/playlist/37i9dQZF1DWZqd5JICZI0u"}]}, tired:{movies:["Into the Wild"],quotes:["Dinlen."],songs:[{name:"Deep Sleep",url:"http://open.spotify.com/playlist/37i9dQZF1DWZd79rJ6a7lp"}]}, neutral:{movies:["Interstellar"],quotes:["Evren."],songs:[{name:"Deep Focus",url:"http://open.spotify.com/playlist/37i9dQZF1DWZeKCadgRdKQ"}]} };
 
-        const input = document.getElementById('burden-input');
         input.addEventListener('input', (e)=>{ const v=e.target.value.toLowerCase(); const a=analyzeSoul(v); sphere.style.background=a.color; document.documentElement.style.setProperty('--main-color',a.color); });
         input.addEventListener('keypress', (e)=>{ if(e.key==='Enter' && !e.shiftKey){e.preventDefault(); triggerRitual();} });
         const cvs=document.getElementById('star-canvas'); const cx=cvs.getContext('2d'); let st=[]; function initSt(){ cvs.width=window.innerWidth; cvs.height=window.innerHeight; st=[]; for(let i=0;i<150;i++)st.push({x:Math.random()*cvs.width,y:Math.random()*cvs.height,s:Math.random()*1.5,sp:Math.random()*0.4+0.1}); } function drSt(){ cx.clearRect(0,0,cvs.width,cvs.height); cx.fillStyle="white"; st.forEach(s=>{ cx.beginPath(); cx.arc(s.x,s.y,s.s,0,Math.PI*2); cx.fill(); s.y-=s.sp*0.2; if(s.y<0)s.y=cvs.height; }); requestAnimationFrame(drSt); } initSt(); drSt();
